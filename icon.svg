@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#E3350D"/>
+      <stop offset="100%" stop-color="#C42D0B"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
+  <!-- Pokeball body -->
+  <circle cx="256" cy="270" r="160" fill="#fff" stroke="#2C2C54" stroke-width="12"/>
+  <!-- Pokeball top half (red) -->
+  <path d="M96 270 A160 160 0 0 1 416 270" fill="#E3350D" stroke="#2C2C54" stroke-width="12"/>
+  <!-- Pokeball center line -->
+  <line x1="96" y1="270" x2="416" y2="270" stroke="#2C2C54" stroke-width="12"/>
+  <!-- Pokeball center button -->
+  <circle cx="256" cy="270" r="36" fill="#fff" stroke="#2C2C54" stroke-width="12"/>
+  <circle cx="256" cy="270" r="18" fill="#fff" stroke="#2C2C54" stroke-width="6"/>
+  <!-- Torii gate on top -->
+  <g fill="none" stroke="#FFCB05" stroke-width="10" stroke-linecap="round">
+    <!-- Top beam -->
+    <path d="M166 120 L346 120" stroke-width="14"/>
+    <!-- Curved top -->
+    <path d="M156 105 Q256 75 356 105" stroke-width="10"/>
+    <!-- Pillars -->
+    <line x1="190" y1="120" x2="190" y2="175"/>
+    <line x1="322" y1="120" x2="322" y2="175"/>
+    <!-- Cross beam -->
+    <line x1="180" y1="145" x2="332" y2="145"/>
+  </g>
+  <!-- JP text -->
+  <text x="256" y="470" text-anchor="middle" font-family="sans-serif" font-weight="bold" font-size="48" fill="#FFCB05" letter-spacing="4">日本ガイド</text>
+</svg>
