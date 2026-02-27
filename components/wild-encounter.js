@@ -73,6 +73,9 @@ class WildEncounter extends HTMLElement {
 
     // Listen for Nara deer event
     bus.on('nara-deer', () => this._showNaraDeer());
+
+    // Listen for location easter egg events
+    bus.on('location-easter-egg', (e) => this._showLocationEasterEgg(e.detail.location));
   }
 
   _showFact(fact) {
@@ -108,6 +111,31 @@ class WildEncounter extends HTMLElement {
 
     overlay.querySelector('#run-fact').addEventListener('click', () => {
       overlay.classList.remove('show');
+    });
+  }
+
+  _showLocationEasterEgg(location) {
+    sfx('location-discovery');
+    const overlay = this.shadowRoot.getElementById('overlay');
+    const sceneSprite = sprite(location.sprite, 64) || sprite('scene-wild-fact', 64);
+    overlay.innerHTML = `
+      <div class="wild-card">
+        <div class="wild-emoji" style="font-size:0">${sceneSprite}</div>
+        <div class="wild-title">${location.name} discovered!</div>
+        <div class="wild-text">
+          ${location.text}<br><br>
+          ${sprite('bulbasaur-excited', 24)} Bulbasaur is thrilled!
+        </div>
+        <div class="wild-btns">
+          <button class="btn-primary" id="ok-location">Amazing!</button>
+        </div>
+      </div>
+    `;
+    overlay.classList.add('show');
+
+    overlay.querySelector('#ok-location').addEventListener('click', () => {
+      overlay.classList.remove('show');
+      bus.emit('show-toast', { text: `${location.name} added to your discoveries!` });
     });
   }
 

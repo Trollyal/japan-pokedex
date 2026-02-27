@@ -34,6 +34,7 @@ const PRECACHE_URLS = [
   './data/quiz-builders.js',
   './data/facts.js',
   './data/badges.js',
+  './data/locations.js',
   // Sprite WebP files
   './sprites/pokeball.webp',
   './sprites/greatball.webp',
@@ -110,6 +111,11 @@ const PRECACHE_URLS = [
   './sprites/scene-wild-fact.webp',
   './sprites/scene-nara-deer.webp',
   './sprites/scene-day-recap.webp',
+  './sprites/scene-fushimi-inari.webp',
+  './sprites/scene-dotonbori.webp',
+  './sprites/scene-osaka-castle.webp',
+  './sprites/scene-kinkakuji.webp',
+  './sprites/scene-arashiyama.webp',
   'https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Quicksand:wght@400;500;600;700&display=swap'
 ];
 

@@ -9,6 +9,7 @@ import { putBlob } from '../lib/storage.js';
 import { sprite } from '../lib/sprites.js';
 import { sfx } from '../lib/audio.js';
 import { checkAchievements } from '../data/badges.js';
+import { checkLocationEasterEggs } from '../data/locations.js';
 
 const localSheet = new CSSStyleSheet();
 localSheet.replaceSync(/*css*/`
@@ -360,6 +361,9 @@ class ScreenCatchFlow extends HTMLElement {
       // Check Nara bounding box for easter egg
       this._checkNaraEasterEgg();
 
+      // Check location easter eggs
+      this._checkLocationEasterEggs();
+
       // Auto-advance to beat 2
       setTimeout(() => this._showBeat(2), 800);
     } catch (err) {
@@ -608,6 +612,16 @@ class ScreenCatchFlow extends HTMLElement {
       state.naraEasterEgg = true;
       state.achievements = { ...state.achievements, naraDeer: true };
       bus.emit('nara-deer');
+    }
+  }
+
+  _checkLocationEasterEggs() {
+    if (!this._position) return;
+    const state = getState();
+    const loc = checkLocationEasterEggs(this._position.lat, this._position.lng, state);
+    if (loc) {
+      state.locationEasterEggs = { ...state.locationEasterEggs, [loc.id]: true };
+      bus.emit('location-easter-egg', { location: loc });
     }
   }
 
