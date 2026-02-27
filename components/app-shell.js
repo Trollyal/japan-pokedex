@@ -4,7 +4,7 @@ import { bus } from '../lib/events.js';
 import { navigate, getCurrentScreen } from '../lib/router.js';
 import { sprite } from '../lib/sprites.js';
 import { sfx, toggleMute } from '../lib/audio.js';
-import { getCurrentBall } from '../lib/progression.js';
+import { getCurrentBall, BALL_TIERS } from '../lib/progression.js';
 import { getState, onStateChange } from '../lib/state.js';
 
 class AppShell extends HTMLElement {
@@ -82,11 +82,17 @@ ${sprite('nav-journal', 28)}
     const fab = this.querySelector('#pokeball-fab');
     if (!fab) return;
     if (this._currentBall && this._currentBall !== ball.name) {
-      // Ball upgraded — animate and play sound
-      fab.innerHTML = sprite(ball.name, 56);
-      fab.classList.add('ball-upgrading');
-      sfx('ball-upgrade');
-      setTimeout(() => fab.classList.remove('ball-upgrading'), 800);
+      // Only animate if upgrading (higher tier index)
+      const oldIdx = BALL_TIERS.findIndex(t => t.name === this._currentBall);
+      const newIdx = BALL_TIERS.findIndex(t => t.name === ball.name);
+      if (newIdx > oldIdx) {
+        fab.innerHTML = sprite(ball.name, 56);
+        fab.classList.add('ball-upgrading');
+        sfx('ball-upgrade');
+        setTimeout(() => fab.classList.remove('ball-upgrading'), 800);
+      } else {
+        fab.innerHTML = sprite(ball.name, 56);
+      }
     } else if (!this._currentBall) {
       fab.innerHTML = sprite(ball.name, 56);
     }
@@ -135,6 +141,10 @@ ${sprite('nav-journal', 28)}
     });
 
     fab.addEventListener('pointerleave', () => {
+      clearTimeout(fabTimer);
+    });
+
+    fab.addEventListener('pointercancel', () => {
       clearTimeout(fabTimer);
     });
 
@@ -191,19 +201,28 @@ ${sprite('nav-journal', 28)}
 
     // Dismiss on tap outside or scroll
     const dismiss = (e) => {
-      if (!menu.contains(e.target) && e.target.id !== 'pokeball-fab') {
+      if (!menu.contains(e.target) && !e.target.closest('#pokeball-fab')) {
         this._hideSituationMenu();
       }
     };
+    const scrollDismiss = () => this._hideSituationMenu();
+    this._menuDismissCleanup = () => {
+      document.removeEventListener('pointerdown', dismiss);
+      window.removeEventListener('scroll', scrollDismiss);
+    };
     setTimeout(() => {
       document.addEventListener('pointerdown', dismiss, { once: true });
-      window.addEventListener('scroll', () => this._hideSituationMenu(), { once: true });
+      window.addEventListener('scroll', scrollDismiss, { once: true });
     }, 50);
   }
 
   _hideSituationMenu() {
     const menu = this.querySelector('#situation-menu');
     if (menu) menu.remove();
+    if (this._menuDismissCleanup) {
+      this._menuDismissCleanup();
+      this._menuDismissCleanup = null;
+    }
   }
 
   showDialogue(text, autoHide = 0) {

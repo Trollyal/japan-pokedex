@@ -402,7 +402,7 @@ class ScreenCatchFlow extends HTMLElement {
       const deltaY = startY - point.clientY; // positive = up
       const duration = Date.now() - startTime;
 
-      if (deltaY > 80 && duration < 500) {
+      if (deltaY > 80 && duration < 300) {
         // Successful swipe — throw!
         this._throwFired = true;
         ball.style.transform = `translateY(-200px)`;
@@ -432,7 +432,7 @@ class ScreenCatchFlow extends HTMLElement {
     if (Math.random() < 0.05) {
       setTimeout(() => {
         sfx('catch-breakfree');
-        ball.innerHTML = '💨';
+        ball.innerHTML = '<span style="font-size:24px;line-height:80px">Poof!</span>';
         this.shadowRoot.querySelector('#beat2 .throw-hint').textContent = 'Oh! It broke free!';
         setTimeout(() => {
           ball.innerHTML = sprite('pokeball', 80);
@@ -577,8 +577,11 @@ class ScreenCatchFlow extends HTMLElement {
 
     // Check time-based achievements
     const hour = now.getHours();
+    const prevAch = { ...state.achievements };
     if (hour >= 22 || hour < 5) state.achievements = { ...state.achievements, nightOwl: true };
     if (hour >= 5 && hour < 7) state.achievements = { ...state.achievements, earlyBird: true };
+    if (!prevAch.nightOwl && state.achievements.nightOwl) bus.emit('badge-earned', { badge: 'nightOwl' });
+    if (!prevAch.earlyBird && state.achievements.earlyBird) bus.emit('badge-earned', { badge: 'earlyBird' });
 
     // Update longestStreak
     const currentStreak = state.catchStreak?.count || 0;

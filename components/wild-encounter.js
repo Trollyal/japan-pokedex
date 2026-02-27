@@ -115,7 +115,7 @@ class WildEncounter extends HTMLElement {
   }
 
   _showLocationEasterEgg(location) {
-    sfx('location-discovery');
+    // sfx handled by bus auto-listener in lib/audio.js (bus.on('location-easter-egg'))
     const overlay = this.shadowRoot.getElementById('overlay');
     const sceneSprite = sprite(location.sprite, 64) || sprite('scene-wild-fact', 64);
     overlay.innerHTML = `

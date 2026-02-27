@@ -72,7 +72,7 @@ export function checkAchievements(state) {
   if (photoCount >= 5) earn('shutterBug');
 
   // --- Streak-based ---
-  const streak = state.longestStreak || state.catchStreak?.count || 0;
+  const streak = state.longestStreak || 0;
   if (streak >= 3) earn('streak3');
   if (streak >= 5) earn('streak5');
   if (streak >= 7) earn('streak7');
@@ -92,6 +92,8 @@ export function checkAchievements(state) {
   // Note: perfectQuiz, comboKing, nightOwl, earlyBird, naraDeer are triggered
   // from their respective flows and may already be set. We preserve them here.
 
-  state.achievements = ach;
+  if (newlyEarned.length > 0) {
+    state.achievements = ach;
+  }
   return newlyEarned;
 }

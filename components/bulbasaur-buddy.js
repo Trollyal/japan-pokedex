@@ -6,11 +6,11 @@ import { sprite } from '../lib/sprites.js';
 import { sfx } from '../lib/audio.js';
 
 const MOODS = {
-  happy:    { sprite: 'bulbasaur-happy',    anim: 'buddyBounce' },
-  excited:  { sprite: 'bulbasaur-excited',  anim: 'buddyExcited' },
-  sleepy:   { sprite: 'bulbasaur-sleepy',   anim: 'buddySleepy' },
-  confused: { sprite: 'bulbasaur-confused',  anim: 'buddyConfused' },
-  sparkle:  { sprite: 'bulbasaur-excited',  anim: 'buddySparkle' },
+  happy:    { sprite: 'bulbasaur-happy' },
+  excited:  { sprite: 'bulbasaur-excited' },
+  sleepy:   { sprite: 'bulbasaur-sleepy' },
+  confused: { sprite: 'bulbasaur-confused' },
+  sparkle:  { sprite: 'bulbasaur-excited' },
 };
 
 const localSheet = new CSSStyleSheet();
@@ -89,14 +89,22 @@ class BulbasaurBuddy extends HTMLElement {
     });
 
     // Bus listeners for mood reactions
-    bus.on('spot-caught', () => this._setMood('excited', 'buddyExcited', 2000));
-    bus.on('badge-earned', () => this._setMood('sparkle', 'buddySparkle', 2500));
-    bus.on('battle-correct', () => this._setMood('happy', 'buddyWiggle', 1200));
-    bus.on('battle-wrong', () => this._setMood('confused', 'buddyConfused', 1500));
-    bus.on('navigate', () => this._setMood('happy', 'buddyBounce', 800));
+    this._unsubs = [
+      bus.on('spot-caught', () => this._setMood('excited', 'buddyExcited', 2000)),
+      bus.on('badge-earned', () => this._setMood('sparkle', 'buddySparkle', 2500)),
+      bus.on('battle-correct', () => this._setMood('happy', 'buddyWiggle', 1200)),
+      bus.on('battle-wrong', () => this._setMood('confused', 'buddyConfused', 1500)),
+      bus.on('navigate', () => this._setMood('happy', 'buddyBounce', 800)),
+    ];
 
     // Start idle timer
     this._resetIdleTimer();
+  }
+
+  disconnectedCallback() {
+    if (this._unsubs) this._unsubs.forEach(fn => fn());
+    clearTimeout(this._idleTimer);
+    clearTimeout(this._moodTimer);
   }
 
   _setMood(moodName, animClass, duration) {
@@ -125,6 +133,7 @@ class BulbasaurBuddy extends HTMLElement {
   _resetIdleTimer() {
     clearTimeout(this._idleTimer);
     this._idleTimer = setTimeout(() => {
+      clearTimeout(this._moodTimer);
       const buddy = this.shadowRoot.getElementById('buddy');
       if (!buddy) return;
       buddy.innerHTML = sprite('bulbasaur-sleepy', 40);

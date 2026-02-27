@@ -281,7 +281,7 @@ class ScreenBattle extends HTMLElement {
       <div class="progress-info">
         <span>${this._quiz.current + 1} / ${this._quiz.questions.length}</span>
         <span>Score: ${this._quiz.score}</span>
-        <button class="flee-btn" id="flee-btn">RUN 💨</button>
+        <button class="flee-btn" id="flee-btn">RUN</button>
       </div>
       <div class="battle-hp"><div class="battle-hp-fill ${hpClass}" style="width:${100 - progress}%"></div></div>
       <div class="streak-indicator ${this._quiz.combo >= 3 ? 'on' : ''}">
@@ -404,7 +404,7 @@ class ScreenBattle extends HTMLElement {
       bus.emit('battle-wrong');
       this._quiz.combo = 0;
       this._showFlee();
-      bus.emit('show-dialogue', { text: explanation || 'Oh no, it fled! 💨', autoHide: 3000 });
+      bus.emit('show-dialogue', { text: explanation || 'Oh no, it fled!', autoHide: 3000 });
     }
 
     setTimeout(() => {
