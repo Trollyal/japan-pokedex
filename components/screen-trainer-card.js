@@ -5,6 +5,7 @@ import { getState, onStateChange } from '../lib/state.js';
 import { bus } from '../lib/events.js';
 import { sprite } from '../lib/sprites.js';
 import { sfx } from '../lib/audio.js';
+import { ACHIEVEMENT_BADGES } from '../data/badges.js';
 
 const localSheet = new CSSStyleSheet();
 localSheet.replaceSync(/*css*/`
@@ -134,16 +135,6 @@ localSheet.replaceSync(/*css*/`
     font-family: 'Press Start 2P', monospace;
   }
 `);
-
-const ACHIEVEMENTS_DEF = [
-  { key: 'foodMaster', icon: 'badge-food-master', label: 'FOOD MASTER' },
-  { key: 'shrineKeeper', icon: 'badge-shrine-keeper', label: 'SHRINE KEEPER' },
-  { key: 'nightOwl', icon: 'badge-night-owl', label: 'NIGHT OWL' },
-  { key: 'earlyBird', icon: 'badge-early-bird', label: 'EARLY BIRD' },
-  { key: 'explorer', icon: 'badge-explorer', label: 'EXPLORER' },
-  { key: 'kansaiChampion', icon: 'badge-champion', label: 'CHAMPION' },
-  { key: 'naraDeer', icon: 'badge-nara-deer', label: 'NARA DEER' },
-];
 
 const QUIZ_BADGES = [
   { type: 'fire', icon: 'type-fire', name: 'PHRASES' },
@@ -289,11 +280,11 @@ class ScreenTrainerCard extends HTMLElement {
       </div>`
     ).join('');
 
-    // Achievements
-    this.shadowRoot.getElementById('ach-grid').innerHTML = ACHIEVEMENTS_DEF.map(a =>
-      `<div class="ach-item">
-        <div class="ach-icon ${state.achievements?.[a.key] ? 'earned' : ''}">${sprite(a.icon, 26)}</div>
-        <div class="ach-label">${a.label}</div>
+    // Achievements (all 20 from centralized badges.js)
+    this.shadowRoot.getElementById('ach-grid').innerHTML = ACHIEVEMENT_BADGES.map(a =>
+      `<div class="ach-item" title="${a.desc}">
+        <div class="ach-icon ${state.achievements?.[a.key] ? 'earned' : ''}">${a.icon}</div>
+        <div class="ach-label">${a.label.toUpperCase()}</div>
       </div>`
     ).join('');
 

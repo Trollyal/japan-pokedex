@@ -7,6 +7,7 @@ import { shuffle, buildPhraseQuestions, buildKanjiQuestions, buildEtiquetteQuest
 import { bus } from '../lib/events.js';
 import { sprite } from '../lib/sprites.js';
 import { sfx } from '../lib/audio.js';
+import { checkAchievements } from '../data/badges.js';
 
 const localSheet = new CSSStyleSheet();
 localSheet.replaceSync(/*css*/`
@@ -500,6 +501,25 @@ class ScreenBattle extends HTMLElement {
 
     if (earnedNewBadge) {
       bus.emit('badge-earned', { badge: type });
+    }
+
+    // Quiz-specific achievements
+    const ach = { ...state.achievements };
+    let achChanged = false;
+    if (s === 10 && !ach.perfectQuiz) {
+      ach.perfectQuiz = true; achChanged = true;
+      bus.emit('badge-earned', { badge: 'perfectQuiz' });
+    }
+    if (this._quiz.bestCombo >= 7 && !ach.comboKing) {
+      ach.comboKing = true; achChanged = true;
+      bus.emit('badge-earned', { badge: 'comboKing' });
+    }
+    if (achChanged) state.achievements = ach;
+
+    // Run centralized check (catches quizMaster if all 4 badges now earned)
+    const newlyEarned = checkAchievements(state);
+    for (const key of newlyEarned) {
+      bus.emit('badge-earned', { badge: key });
     }
   }
 

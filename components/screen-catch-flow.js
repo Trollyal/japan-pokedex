@@ -8,6 +8,7 @@ import { SPOT_TYPES, RARITY } from '../lib/pokemon-types.js';
 import { putBlob } from '../lib/storage.js';
 import { sprite } from '../lib/sprites.js';
 import { sfx } from '../lib/audio.js';
+import { checkAchievements } from '../data/badges.js';
 
 const localSheet = new CSSStyleSheet();
 localSheet.replaceSync(/*css*/`
@@ -488,8 +489,17 @@ class ScreenCatchFlow extends HTMLElement {
     if (hour >= 22 || hour < 5) state.achievements = { ...state.achievements, nightOwl: true };
     if (hour >= 5 && hour < 7) state.achievements = { ...state.achievements, earlyBird: true };
 
-    // Check type-based achievements
-    this._checkAchievements(state);
+    // Update longestStreak
+    const currentStreak = state.catchStreak?.count || 0;
+    if (currentStreak > (state.longestStreak || 0)) {
+      state.longestStreak = currentStreak;
+    }
+
+    // Check all achievements (centralized)
+    const newlyEarned = checkAchievements(state);
+    for (const key of newlyEarned) {
+      bus.emit('badge-earned', { badge: key });
+    }
 
     // Emit events
     bus.emit('spot-caught', { spot });
@@ -498,25 +508,6 @@ class ScreenCatchFlow extends HTMLElement {
     this._close();
     const total = state.caughtSpots.length;
     bus.emit('show-toast', { text: `Pokédex updated! ${total}/??? spots catalogued.` });
-  }
-
-  _checkAchievements(state) {
-    const spots = state.caughtSpots || [];
-    const typeCounts = {};
-    spots.forEach(s => {
-      typeCounts[s.type] = (typeCounts[s.type] || 0) + 1;
-    });
-
-    const ach = { ...state.achievements };
-    if ((typeCounts.fire || 0) >= 5) ach.foodMaster = true;
-    if ((typeCounts.psychic || 0) >= 3) ach.shrineKeeper = true;
-    if (spots.length >= 20) ach.kansaiChampion = true;
-
-    // Explorer: at least one of every type
-    const allTypes = Object.keys(SPOT_TYPES);
-    if (allTypes.every(t => (typeCounts[t] || 0) >= 1)) ach.explorer = true;
-
-    state.achievements = ach;
   }
 
   _checkNaraEasterEgg() {

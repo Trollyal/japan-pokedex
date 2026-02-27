@@ -6,6 +6,7 @@ import { bus } from '../lib/events.js';
 import { FACTS } from '../data/facts.js';
 import { sprite } from '../lib/sprites.js';
 import { sfx } from '../lib/audio.js';
+import { checkAchievements } from '../data/badges.js';
 
 const localSheet = new CSSStyleSheet();
 localSheet.replaceSync(/*css*/`
@@ -98,6 +99,11 @@ class WildEncounter extends HTMLElement {
       }
       overlay.classList.remove('show');
       bus.emit('show-toast', { text: `Fact caught! ${state.caughtFacts.length} collected.` });
+      // Check fact-hunter achievement
+      const newlyEarned = checkAchievements(state);
+      for (const key of newlyEarned) {
+        bus.emit('badge-earned', { badge: key });
+      }
     });
 
     overlay.querySelector('#run-fact').addEventListener('click', () => {
