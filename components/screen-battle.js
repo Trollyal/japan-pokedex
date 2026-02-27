@@ -385,6 +385,7 @@ class ScreenBattle extends HTMLElement {
 
     if (isCorrect) {
       sfx('battle-correct');
+      bus.emit('battle-correct');
       this._quiz.score++;
       this._quiz.combo++;
       if (this._quiz.combo > this._quiz.bestCombo) this._quiz.bestCombo = this._quiz.combo;
@@ -400,6 +401,7 @@ class ScreenBattle extends HTMLElement {
       bus.emit('show-dialogue', { text: explanation || 'Gotcha! ⭐ Caught successfully!', autoHide: 3000 });
     } else {
       sfx('battle-wrong');
+      bus.emit('battle-wrong');
       this._quiz.combo = 0;
       this._showFlee();
       bus.emit('show-dialogue', { text: explanation || 'Oh no, it fled! 💨', autoHide: 3000 });

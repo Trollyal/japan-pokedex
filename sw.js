@@ -28,6 +28,7 @@ const PRECACHE_URLS = [
   './components/screen-spot-detail.js',
   './components/screen-day-recap.js',
   './components/wild-encounter.js',
+  './components/bulbasaur-buddy.js',
   './data/phrases.js',
   './data/etiquette.js',
   './data/quiz-builders.js',
