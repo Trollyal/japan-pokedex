@@ -4,6 +4,8 @@ import { bus } from '../lib/events.js';
 import { navigate, getCurrentScreen } from '../lib/router.js';
 import { sprite } from '../lib/sprites.js';
 import { sfx, toggleMute } from '../lib/audio.js';
+import { getCurrentBall } from '../lib/progression.js';
+import { getState, onStateChange } from '../lib/state.js';
 
 class AppShell extends HTMLElement {
   constructor() {
@@ -64,6 +66,31 @@ ${sprite('nav-journal', 28)}
     `;
 
     this._bindEvents();
+
+    // Set initial FAB ball based on progression
+    this._currentBall = null;
+    this._updateFABBall();
+
+    // Watch state changes to detect ball upgrades
+    onStateChange('*', () => this._updateFABBall());
+  }
+
+  _updateFABBall() {
+    const state = getState();
+    if (!state) return;
+    const ball = getCurrentBall(state);
+    const fab = this.querySelector('#pokeball-fab');
+    if (!fab) return;
+    if (this._currentBall && this._currentBall !== ball.name) {
+      // Ball upgraded — animate and play sound
+      fab.innerHTML = sprite(ball.name, 56);
+      fab.classList.add('ball-upgrading');
+      sfx('ball-upgrade');
+      setTimeout(() => fab.classList.remove('ball-upgrading'), 800);
+    } else if (!this._currentBall) {
+      fab.innerHTML = sprite(ball.name, 56);
+    }
+    this._currentBall = ball.name;
   }
 
   _bindEvents() {
