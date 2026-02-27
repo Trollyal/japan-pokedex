@@ -136,12 +136,12 @@ localSheet.replaceSync(/*css*/`
 `);
 
 const BULBA_REACTIONS = {
-  fire: "Bulbasaur is drooling! 🌱🍜",
-  water: "Bulbasaur loves hot springs! 🌱♨️",
-  grass: "Bulbasaur feels right at home! 🌱🌸",
-  psychic: "Bulbasaur is being very respectful! 🌱⛩️",
-  electric: "Bulbasaur's eyes are sparkling! 🌱✨",
-  normal: "Bulbasaur is curious! 🌱📍",
+  fire: `${sprite('bulbasaur-excited', 16)} Bulbasaur is drooling! 🍜`,
+  water: `${sprite('bulbasaur-happy', 16)} Bulbasaur loves hot springs! ♨️`,
+  grass: `${sprite('bulbasaur-happy', 16)} Bulbasaur feels right at home! 🌸`,
+  psychic: `${sprite('bulbasaur-happy', 16)} Bulbasaur is being very respectful! ⛩️`,
+  electric: `${sprite('bulbasaur-excited', 16)} Bulbasaur's eyes are sparkling! ✨`,
+  normal: `${sprite('bulbasaur-confused', 16)} Bulbasaur is curious! 📍`,
 };
 
 class ScreenCatchFlow extends HTMLElement {
@@ -274,7 +274,7 @@ class ScreenCatchFlow extends HTMLElement {
       btn.classList.add('selected');
       btn.style.background = SPOT_TYPES[this._selectedType].color;
       btn.style.color = '#fff';
-      this.shadowRoot.getElementById('bulba-reaction').textContent = BULBA_REACTIONS[this._selectedType] || '';
+      this.shadowRoot.getElementById('bulba-reaction').innerHTML = BULBA_REACTIONS[this._selectedType] || '';
     });
 
     // Rarity selection
@@ -384,7 +384,7 @@ class ScreenCatchFlow extends HTMLElement {
     }
 
     // Default bulba reaction
-    this.shadowRoot.getElementById('bulba-reaction').textContent = BULBA_REACTIONS[this._selectedType] || '';
+    this.shadowRoot.getElementById('bulba-reaction').innerHTML = BULBA_REACTIONS[this._selectedType] || '';
 
     // Reset form
     this.shadowRoot.getElementById('spot-name').value = '';

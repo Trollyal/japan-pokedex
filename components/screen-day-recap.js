@@ -136,10 +136,10 @@ class ScreenDayRecap extends HTMLElement {
 
     // Bulbasaur comment
     const comments = [
-      "What a day! Bulbasaur is proud of you! 🌱✨",
-      "Bulbasaur is tired but happy! Great exploring today! 🌱💤",
-      "Bulbasaur can't wait for tomorrow's adventure! 🌱🌟",
-      "So many discoveries! Bulbasaur is impressed! 🌱😊",
+      `What a day! Bulbasaur is proud of you! ${sprite('bulbasaur-excited', 16)} ✨`,
+      `Bulbasaur is tired but happy! Great exploring today! ${sprite('bulbasaur-sleepy', 16)}`,
+      `Bulbasaur can't wait for tomorrow's adventure! ${sprite('bulbasaur-happy', 16)}`,
+      `So many discoveries! Bulbasaur is impressed! ${sprite('bulbasaur-excited', 16)}`,
     ];
     const comment = comments[Math.floor(Math.random() * comments.length)];
 

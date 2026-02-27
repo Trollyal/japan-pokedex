@@ -128,6 +128,11 @@ localSheet.replaceSync(/*css*/`
     cursor: pointer; text-align: center; transition: all .15s;
   }
   .backup-btn:active { transform: scale(.97); }
+
+  .copyright {
+    text-align: center; font-size: 9px; color: #aaa; margin-top: 16px;
+    font-family: 'Press Start 2P', monospace;
+  }
 `);
 
 const ACHIEVEMENTS_DEF = [
@@ -205,6 +210,8 @@ class ScreenTrainerCard extends HTMLElement {
               <button class="backup-btn" id="export-btn">${sprite('icon-export', 14)} EXPORT</button>
               <button class="backup-btn" id="import-btn">${sprite('icon-import', 14)} IMPORT</button>
             </div>
+
+            <div class="copyright">&copy; The Pok&eacute;mon Company</div>
           </div>
         </div>
       </div>

@@ -82,11 +82,11 @@ function showGreeting(state) {
   let msg;
 
   if (hour >= 5 && hour < 12) {
-    msg = `Good morning, ${name}! Ready to explore? ☀️`;
+    msg = `Good morning, ${name}! Ready to explore? ${sprite('icon-sun', 16)}`;
   } else if (hour >= 12 && hour < 18) {
     msg = `The adventure continues, ${name}! 🌸`;
   } else if (hour >= 18 && hour < 23) {
-    msg = `Osaka comes alive at night, ${name}! Check out the neon districts. 🌙`;
+    msg = `Osaka comes alive at night, ${name}! Check out the neon districts. ${sprite('icon-moon', 16)}`;
   } else {
     msg = `Even Bulbasaur is getting sleepy, ${name}... 💤`;
   }

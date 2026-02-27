@@ -118,14 +118,25 @@ ${sprite('nav-journal', 28)}
     box.classList.add('show');
     continueEl.style.display = 'none';
 
-    // Typewriter effect
+    // Typewriter effect (fast-forwards through HTML tags to avoid breaking them)
     let i = 0;
     textEl.innerHTML = '';
     clearInterval(this._dialogueTimeout);
     this._dialogueTimeout = setInterval(() => {
       if (i < text.length) {
-        textEl.innerHTML += text.charAt(i);
-        i++;
+        if (text.charAt(i) === '<') {
+          const closeIdx = text.indexOf('>', i);
+          if (closeIdx !== -1) {
+            textEl.innerHTML += text.substring(i, closeIdx + 1);
+            i = closeIdx + 1;
+          } else {
+            textEl.innerHTML += text.charAt(i);
+            i++;
+          }
+        } else {
+          textEl.innerHTML += text.charAt(i);
+          i++;
+        }
       } else {
         clearInterval(this._dialogueTimeout);
         continueEl.style.display = 'block';

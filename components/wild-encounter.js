@@ -116,7 +116,7 @@ class WildEncounter extends HTMLElement {
           ${sprite('bulbasaur-confused', 24)} Bulbasaur looks confused...
         </div>
         <div class="wild-btns">
-          <button class="btn-primary" id="ok-deer">Amazing! 🦌</button>
+          <button class="btn-primary" id="ok-deer">Amazing! ${sprite('scene-nara-deer', 16)}</button>
         </div>
       </div>
     `;
