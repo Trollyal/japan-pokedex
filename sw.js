@@ -1,4 +1,4 @@
-const CACHE_NAME = 'japan-guide-v12';
+const CACHE_NAME = 'japan-guide-v13';
 const PRECACHE_URLS = [
   './',
   './index.html',
