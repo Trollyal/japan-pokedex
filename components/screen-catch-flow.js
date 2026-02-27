@@ -134,6 +134,27 @@ localSheet.replaceSync(/*css*/`
   }
 
   .btn-row { display: flex; gap: 8px; margin-top: 16px; justify-content: center; }
+
+  /* Beat 2: Swipe-to-throw */
+  .throw-zone {
+    touch-action: none; user-select: none; -webkit-user-select: none;
+    height: 200px; display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .throw-ball {
+    font-size: 0; line-height: 0; transition: transform .15s ease-out;
+    cursor: grab;
+  }
+  .throw-ball.spring-back { transition: transform .3s cubic-bezier(.34,1.56,.64,1); }
+  .throw-hint {
+    font-family: 'Press Start 2P', monospace; font-size: 9px; color: #888;
+    text-align: center; margin: 8px 0; animation: hintBob 1.5s ease-in-out infinite;
+  }
+  @keyframes hintBob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+  .throw-fallback { margin-top: 12px; font-size: 11px; opacity: .6; }
 `);
 
 const BULBA_REACTIONS = {
@@ -172,11 +193,13 @@ class ScreenCatchFlow extends HTMLElement {
             <div class="gps-status" id="gps-status">📡 Searching for GPS signal...</div>
           </div>
 
-          <!-- Beat 2: Throw -->
+          <!-- Beat 2: Throw (swipe gesture + click fallback) -->
           <div class="beat" data-beat="2" id="beat2">
-            <div class="pokeball-throw" id="pokeball-throw">${sprite('pokeball', 80)}</div>
-            <div class="wild-text">Ready to throw!</div>
-            <button class="btn-primary" id="throw-btn">THROW!</button>
+            <div class="throw-hint">Swipe up to throw!</div>
+            <div class="throw-zone" id="throw-zone">
+              <div class="throw-ball" id="throw-ball">${sprite('pokeball', 80)}</div>
+            </div>
+            <button class="btn-secondary throw-fallback" id="throw-btn">THROW!</button>
           </div>
 
           <!-- Beat 3: Gotcha -->
@@ -292,8 +315,11 @@ class ScreenCatchFlow extends HTMLElement {
       this._handlePhoto(e.target.files[0]);
     });
 
-    // Throw button
+    // Throw button (click fallback)
     this.shadowRoot.getElementById('throw-btn').addEventListener('click', () => this._beat2Throw());
+
+    // Swipe gesture
+    this._bindThrowGesture();
 
     // Catch button
     this.shadowRoot.getElementById('catch-btn').addEventListener('click', () => this._beat4Catch());
@@ -307,6 +333,15 @@ class ScreenCatchFlow extends HTMLElement {
     this._photoBlob = null;
     this._selectedType = 'normal';
     this._selectedRarity = 'common';
+    this._throwFired = false;
+
+    // Reset throw ball visual
+    const throwBall = this.shadowRoot.getElementById('throw-ball');
+    if (throwBall) {
+      throwBall.innerHTML = sprite('pokeball', 80);
+      throwBall.style.transform = '';
+      throwBall.classList.remove('shake-anim', 'spring-back');
+    }
 
     const overlay = this.shadowRoot.getElementById('overlay');
     overlay.classList.add('show');
@@ -335,21 +370,72 @@ class ScreenCatchFlow extends HTMLElement {
     }
   }
 
+  _bindThrowGesture() {
+    const zone = this.shadowRoot.getElementById('throw-zone');
+    const ball = this.shadowRoot.getElementById('throw-ball');
+    let startY = 0, startTime = 0, dragging = false;
+
+    const onStart = (e) => {
+      if (this._throwFired) return;
+      const point = e.touches ? e.touches[0] : e;
+      startY = point.clientY;
+      startTime = Date.now();
+      dragging = true;
+      ball.classList.remove('spring-back');
+    };
+
+    const onMove = (e) => {
+      if (!dragging || this._throwFired) return;
+      const point = e.touches ? e.touches[0] : e;
+      const deltaY = Math.min(0, point.clientY - startY); // only up
+      ball.style.transform = `translateY(${deltaY}px)`;
+    };
+
+    const onEnd = (e) => {
+      if (!dragging || this._throwFired) return;
+      dragging = false;
+      const point = e.changedTouches ? e.changedTouches[0] : e;
+      const deltaY = startY - point.clientY; // positive = up
+      const duration = Date.now() - startTime;
+
+      if (deltaY > 80 && duration < 500) {
+        // Successful swipe — throw!
+        this._throwFired = true;
+        ball.style.transform = `translateY(-200px)`;
+        navigator.vibrate?.(50);
+        this._beat2Throw();
+      } else {
+        // Spring back
+        ball.classList.add('spring-back');
+        ball.style.transform = '';
+      }
+    };
+
+    zone.addEventListener('touchstart', onStart, { passive: true });
+    zone.addEventListener('touchmove', onMove, { passive: true });
+    zone.addEventListener('touchend', onEnd);
+    zone.addEventListener('mousedown', onStart);
+    zone.addEventListener('mousemove', onMove);
+    zone.addEventListener('mouseup', onEnd);
+  }
+
   _beat2Throw() {
     sfx('catch-throw');
-    const ball = this.shadowRoot.getElementById('pokeball-throw');
+    const ball = this.shadowRoot.getElementById('throw-ball');
     ball.classList.add('shake-anim');
 
     // 5% break-free first attempt
     if (Math.random() < 0.05) {
       setTimeout(() => {
         sfx('catch-breakfree');
-        ball.textContent = '💨';
-        this.shadowRoot.querySelector('#beat2 .wild-text').textContent = 'Oh! It broke free!';
+        ball.innerHTML = '💨';
+        this.shadowRoot.querySelector('#beat2 .throw-hint').textContent = 'Oh! It broke free!';
         setTimeout(() => {
-          ball.textContent = '⚪';
+          ball.innerHTML = sprite('pokeball', 80);
           ball.classList.remove('shake-anim');
-          this.shadowRoot.querySelector('#beat2 .wild-text').textContent = 'Try again!';
+          ball.style.transform = '';
+          this._throwFired = false;
+          this.shadowRoot.querySelector('#beat2 .throw-hint').textContent = 'Swipe up to throw!';
         }, 1000);
       }, 1500);
       return;
@@ -361,6 +447,7 @@ class ScreenCatchFlow extends HTMLElement {
       const spotNum = (state.caughtSpots?.length || 0) + 1;
       this.shadowRoot.getElementById('spot-number').textContent = `Spot #${String(spotNum).padStart(3, '0')}`;
       sfx('catch-success');
+      navigator.vibrate?.(50);
       this._showBeat(3);
 
       // Auto to registration after delay
