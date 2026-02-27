@@ -114,9 +114,28 @@ ${sprite('nav-journal', 28)}
       sfx('ui-tap');
     });
 
-    // Pokeball FAB
-    this.querySelector('#pokeball-fab').addEventListener('click', () => {
-      bus.emit('start-catch');
+    // Pokeball FAB — short tap = catch, long-press (500ms) = situation menu
+    const fab = this.querySelector('#pokeball-fab');
+    let fabTimer = null;
+    let fabFired = false;
+
+    fab.addEventListener('pointerdown', (e) => {
+      fabFired = false;
+      fabTimer = setTimeout(() => {
+        fabFired = true;
+        this._showSituationMenu();
+      }, 500);
+    });
+
+    fab.addEventListener('pointerup', () => {
+      clearTimeout(fabTimer);
+      if (!fabFired) {
+        bus.emit('start-catch');
+      }
+    });
+
+    fab.addEventListener('pointerleave', () => {
+      clearTimeout(fabTimer);
     });
 
     // Dialogue box tap to dismiss
@@ -135,6 +154,56 @@ ${sprite('nav-journal', 28)}
       const isOnboarding = e.detail.screen === 'onboarding';
       this.classList.toggle('onboarding-active', isOnboarding);
     });
+  }
+
+  _showSituationMenu() {
+    // Remove existing menu if any
+    this._hideSituationMenu();
+    sfx('ui-tap');
+
+    const situations = [
+      { label: 'Restaurant', icon: sprite('grp-restaurant', 20), filter: 'Restaurant' },
+      { label: 'Shopping', icon: sprite('grp-shopping', 20), filter: 'Shopping' },
+      { label: 'Konbini', icon: sprite('grp-konbini', 20), filter: 'Konbini' },
+      { label: 'Directions', icon: sprite('grp-directions', 20), filter: 'Directions' },
+      { label: 'Emergency', icon: sprite('grp-emergency', 20), filter: 'Emergency' },
+    ];
+
+    const menu = document.createElement('div');
+    menu.className = 'situation-menu show';
+    menu.id = 'situation-menu';
+    menu.innerHTML = situations.map((s, i) =>
+      `<button class="situation-btn" data-filter="${s.filter}" style="animation-delay:${i * 0.05}s">
+        ${s.icon} <span>${s.label}</span>
+      </button>`
+    ).join('');
+
+    this.appendChild(menu);
+
+    // Bind button clicks
+    menu.querySelectorAll('.situation-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        sfx('ui-tap');
+        this._hideSituationMenu();
+        navigate('pokedex', { filter: btn.dataset.filter });
+      });
+    });
+
+    // Dismiss on tap outside or scroll
+    const dismiss = (e) => {
+      if (!menu.contains(e.target) && e.target.id !== 'pokeball-fab') {
+        this._hideSituationMenu();
+      }
+    };
+    setTimeout(() => {
+      document.addEventListener('pointerdown', dismiss, { once: true });
+      window.addEventListener('scroll', () => this._hideSituationMenu(), { once: true });
+    }, 50);
+  }
+
+  _hideSituationMenu() {
+    const menu = this.querySelector('#situation-menu');
+    if (menu) menu.remove();
   }
 
   showDialogue(text, autoHide = 0) {

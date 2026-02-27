@@ -135,6 +135,20 @@ class ScreenPokedex extends HTMLElement {
   connectedCallback() {
     this._render();
     this._bindEvents();
+
+    // Check for filter attribute (from situation menu)
+    const filter = this.getAttribute('filter');
+    if (filter) {
+      // Switch to Phrases tab and pre-fill search with group name
+      this._currentTab = 'fire';
+      this.shadowRoot.querySelectorAll('.type-tab').forEach(t =>
+        t.classList.toggle('active', t.dataset.type === 'fire')
+      );
+      const search = this.shadowRoot.getElementById('dex-search');
+      search.value = filter;
+      this.shadowRoot.getElementById('clear-btn').classList.add('show');
+      this._renderContent();
+    }
   }
 
   _render() {
