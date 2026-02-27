@@ -2,12 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
 <title>Japan Survival Guide — Pokédex Edition</title>
-<!-- PWA meta tags -->
+<!-- PWA -->
 <meta name="description" content="Pokemon-themed Japan survival guide with phrases, kanji, etiquette & Kansai tips">
 <meta name="theme-color" content="#E3350D">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Japan Guide">
 <link rel="manifest" href="manifest.json">
@@ -15,1309 +16,198 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
---poke-red:#E3350D;--poke-blue:#3B4CCA;--poke-yellow:#FFCB05;--poke-dark:#2C2C54;
---sakura:#FFB7C5;--matcha:#8DB580;--cream:#FFF8EE;--cream-dark:#F5E6D3;
---fire:#FF6B35;--fire-bg:#FFF0E8;--fire-border:#FFD4BC;
---water:#4A90D9;--water-bg:#E8F2FF;--water-border:#B8D4F0;
---grass:#5DAA68;--grass-bg:#E8F5E9;--grass-border:#B8DFB8;
---electric:#F5C842;--electric-bg:#FFFBE8;--electric-border:#F0E0A0;
---shadow:0 4px 20px rgba(0,0,0,.12);
---pixel-border:3px solid var(--poke-dark);
---radius:16px;
-}
-html{font-size:16px;-webkit-tap-highlight-color:transparent}
-body{
-font-family:'Quicksand',sans-serif;background:var(--cream);color:var(--poke-dark);
-min-height:100dvh;overflow-x:hidden;padding-bottom:80px;
-background-image:
-  radial-gradient(circle at 20% 20%,rgba(255,183,197,.2) 0%,transparent 50%),
-  radial-gradient(circle at 80% 80%,rgba(141,181,128,.15) 0%,transparent 50%);
-}
-.pixel{font-family:'Press Start 2P',monospace}
+/* ===== LAYERS ===== */
+@layer reset, base, utilities;
 
-/* ===== POKEBALL BACKGROUND PATTERN ===== */
-body::before{
-content:'';position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;
-opacity:.03;
-background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Ccircle cx='30' cy='30' r='28' fill='none' stroke='%232C2C54' stroke-width='2'/%3E%3Cline x1='2' y1='30' x2='58' y2='30' stroke='%232C2C54' stroke-width='2'/%3E%3Ccircle cx='30' cy='30' r='8' fill='none' stroke='%232C2C54' stroke-width='2'/%3E%3C/svg%3E");
-background-size:60px 60px;
+@layer reset {
+  *, *::before, *::after { box-sizing: border-box; margin: 0; }
+  body, h1, h2, h3, h4, h5, h6, p, ul, ol, figure, blockquote, fieldset { padding: 0; }
 }
 
-/* ===== HEADER ===== */
-.header{
-position:sticky;top:0;z-index:100;
-background:linear-gradient(135deg,var(--poke-red),#c42d0b);
-padding:12px 16px;
-display:flex;align-items:center;justify-content:space-between;
-box-shadow:0 4px 20px rgba(227,53,13,.3);
-}
-.header h1{
-font-family:'Press Start 2P',monospace;font-size:11px;color:#fff;
-line-height:1.4;text-shadow:2px 2px 0 rgba(0,0,0,.3);
-}
-.header h1 span{font-size:8px;display:block;color:var(--poke-yellow);margin-top:4px}
-.trainer-btn{
-background:var(--poke-yellow);border:2px solid var(--poke-dark);
-border-radius:50%;width:42px;height:42px;cursor:pointer;
-display:flex;align-items:center;justify-content:center;
-font-size:18px;box-shadow:2px 2px 0 rgba(0,0,0,.2);
-transition:transform .15s;flex-shrink:0;
-}
-.trainer-btn:active{transform:scale(.9)}
+@layer base {
+  :root {
+    --poke-red: #E3350D; --poke-blue: #3B4CCA; --poke-yellow: #FFCB05; --poke-dark: #2C2C54;
+    --sakura: #FFB7C5; --matcha: #8DB580; --cream: #FFF8EE; --cream-dark: #F5E6D3;
+    --fire: #FF6B35; --fire-bg: #FFF0E8; --fire-border: #FFD4BC;
+    --water: #4A90D9; --water-bg: #E8F2FF; --water-border: #B8D4F0;
+    --grass: #5DAA68; --grass-bg: #E8F5E9; --grass-border: #B8DFB8;
+    --electric: #F5C842; --electric-bg: #FFFBE8; --electric-border: #F0E0A0;
+    --shadow: 0 4px 20px rgba(0,0,0,.12);
+    --pixel-border: 3px solid var(--poke-dark);
+    --radius: 16px;
+  }
 
-/* ===== BOTTOM NAV ===== */
-.bottom-nav{
-position:fixed;bottom:0;left:0;right:0;z-index:100;
-background:#fff;border-top:3px solid var(--poke-dark);
-display:flex;height:72px;
-box-shadow:0 -4px 20px rgba(0,0,0,.1);
-}
-.nav-btn{
-flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-gap:4px;border:none;background:transparent;cursor:pointer;
-font-family:'Press Start 2P',monospace;font-size:7px;color:#888;
-transition:all .2s;position:relative;
-}
-.nav-btn.active{color:var(--poke-red)}
-.nav-btn.active::before{
-content:'';position:absolute;top:-3px;left:20%;right:20%;height:3px;
-background:var(--poke-red);
-}
-.nav-btn svg{width:28px;height:28px}
-.nav-btn.active svg{filter:drop-shadow(0 2px 4px rgba(227,53,13,.3))}
+  html {
+    font-size: 16px;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior-y: none;
+    scroll-behavior: smooth;
+  }
 
-/* ===== SCREENS ===== */
-.screen{display:none;position:relative;z-index:1;padding:16px;animation:fadeIn .3s ease}
-.screen.active{display:block}
-@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  body {
+    font-family: 'Quicksand', sans-serif;
+    background: var(--cream);
+    color: var(--poke-dark);
+    min-height: 100dvh;
+    overflow-x: hidden;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: calc(80px + env(safe-area-inset-bottom));
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(255,183,197,.2) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(141,181,128,.15) 0%, transparent 50%);
+  }
 
-/* ===== POKEDEX MODE ===== */
-.category-tabs{
-display:flex;gap:8px;overflow-x:auto;padding:4px 0 12px;
-scrollbar-width:none;-ms-overflow-style:none;
-}
-.category-tabs::-webkit-scrollbar{display:none}
-.type-tab{
-flex-shrink:0;padding:8px 16px;border-radius:20px;border:2px solid;
-font-family:'Press Start 2P',monospace;font-size:7px;cursor:pointer;
-transition:all .2s;white-space:nowrap;
-}
-.type-tab[data-type="fire"]{border-color:var(--fire);color:var(--fire);background:var(--fire-bg)}
-.type-tab[data-type="water"]{border-color:var(--water);color:var(--water);background:var(--water-bg)}
-.type-tab[data-type="grass"]{border-color:var(--grass);color:var(--grass);background:var(--grass-bg)}
-.type-tab[data-type="electric"]{border-color:var(--electric);color:#b8860b;background:var(--electric-bg)}
-.type-tab.active[data-type="fire"]{background:var(--fire);color:#fff}
-.type-tab.active[data-type="water"]{background:var(--water);color:#fff}
-.type-tab.active[data-type="grass"]{background:var(--grass);color:#fff}
-.type-tab.active[data-type="electric"]{background:var(--electric);color:var(--poke-dark)}
+  .pixel { font-family: 'Press Start 2P', monospace; }
 
-.dex-section{display:none;animation:fadeIn .25s ease}
-.dex-section.active{display:block}
+  /* Pokeball background pattern */
+  body::before {
+    content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 0; pointer-events: none; opacity: .03;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Ccircle cx='30' cy='30' r='28' fill='none' stroke='%232C2C54' stroke-width='2'/%3E%3Cline x1='2' y1='30' x2='58' y2='30' stroke='%232C2C54' stroke-width='2'/%3E%3Ccircle cx='30' cy='30' r='8' fill='none' stroke='%232C2C54' stroke-width='2'/%3E%3C/svg%3E");
+    background-size: 60px 60px;
+  }
 
-.dex-group-title{
-font-family:'Press Start 2P',monospace;font-size:9px;
-margin:16px 0 10px;padding:6px 12px;border-radius:8px;
-display:inline-block;
-}
-.dex-group-title.fire{background:var(--fire-bg);color:var(--fire)}
-.dex-group-title.water{background:var(--water-bg);color:var(--water)}
-.dex-group-title.grass{background:var(--grass-bg);color:var(--grass)}
-.dex-group-title.electric{background:var(--electric-bg);color:#b8860b}
+  /* ===== HEADER ===== */
+  .header {
+    position: sticky; top: 0; z-index: 100;
+    background: linear-gradient(135deg, #C62828, #a02020);
+    padding: calc(12px + env(safe-area-inset-top)) 16px 12px;
+    display: flex; align-items: center; justify-content: space-between;
+    box-shadow: 0 4px 20px rgba(227,53,13,.3);
+  }
+  .header h1 {
+    font-family: 'Press Start 2P', monospace; font-size: 11px; color: #fff;
+    line-height: 1.4; text-shadow: 2px 2px 0 rgba(0,0,0,.3);
+  }
+  .header h1 span { font-size: 8px; display: block; color: #FFF8E1; margin-top: 4px; }
+  .mute-btn {
+    background: rgba(255,255,255,.18); border: 2px solid rgba(255,255,255,.3);
+    border-radius: 10px; cursor: pointer; padding: 10px; margin-right: 6px;
+    width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: background .15s; line-height: 0;
+  }
+  .mute-btn:active { background: rgba(255,255,255,.3); }
+  .mute-btn img { filter: brightness(0) invert(1); }
+  .trainer-btn {
+    background: var(--poke-yellow); border: 2px solid var(--poke-dark);
+    border-radius: 50%; width: 42px; height: 42px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; box-shadow: 2px 2px 0 rgba(0,0,0,.2);
+    transition: transform .15s; flex-shrink: 0; line-height: 0;
+  }
+  .trainer-btn:active { transform: scale(.9); }
 
-/* Phrase cards */
-.dex-card{
-background:#fff;border-radius:var(--radius);padding:14px 16px;margin:8px 0;
-border-left:4px solid;box-shadow:var(--shadow);
-transition:transform .15s;
-}
-.dex-card:active{transform:scale(.98)}
-.dex-card.fire{border-left-color:var(--fire)}
-.dex-card.water{border-left-color:var(--water)}
-.dex-card.grass{border-left-color:var(--grass)}
-.dex-card.electric{border-left-color:var(--electric)}
-.dex-card .dex-num{
-font-family:'Press Start 2P',monospace;font-size:7px;color:#aaa;margin-bottom:6px;
-}
-.dex-card .en{font-weight:700;font-size:15px;margin-bottom:4px}
-.dex-card .jp{font-size:20px;color:var(--poke-dark);margin-bottom:2px}
-.dex-card .romaji{font-size:13px;color:#888;font-style:italic}
+  /* ===== BOTTOM NAV ===== */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+    background: #fff; border-top: 3px solid var(--poke-dark);
+    display: flex; height: calc(72px + env(safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom);
+    box-shadow: 0 -4px 20px rgba(0,0,0,.1);
+  }
+  .nav-btn {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 6px; border: none; background: transparent; cursor: pointer;
+    font-family: 'Press Start 2P', monospace; font-size: 9px; color: #666;
+    transition: all .2s; position: relative;
+  }
+  .nav-btn.active { color: var(--poke-red); }
+  .nav-btn.active::before {
+    content: ''; position: absolute; top: -3px; left: 20%; right: 20%; height: 3px;
+    background: var(--poke-red);
+  }
+  .nav-btn svg, .nav-btn img { width: 28px; height: 28px; display: inline-block; vertical-align: middle; image-rendering: pixelated; }
+  .nav-btn.active svg, .nav-btn.active img { filter: drop-shadow(0 2px 4px rgba(227,53,13,.3)); }
+  .nav-btn:not(.active) img { opacity: .5; }
 
-/* Kanji cards */
-.kanji-card{
-background:#fff;border-radius:var(--radius);padding:20px;margin:8px 0;
-border:2px solid var(--water-border);box-shadow:var(--shadow);
-text-align:center;display:inline-block;width:calc(50% - 8px);
-vertical-align:top;
-}
-.kanji-grid{display:flex;flex-wrap:wrap;gap:8px}
-.kanji-card .kanji-big{font-size:48px;line-height:1.2;margin-bottom:8px}
-.kanji-card .kanji-reading{font-size:12px;color:var(--water);font-weight:600;margin-bottom:4px}
-.kanji-card .kanji-meaning{font-family:'Press Start 2P',monospace;font-size:7px;color:#666}
+  /* ===== POKEBALL FAB ===== */
+  .pokeball-fab {
+    position: fixed;
+    bottom: calc(92px + env(safe-area-inset-bottom));
+    right: 16px;
+    z-index: 99;
+    background: none; border: none; cursor: pointer;
+    animation: fabPulse 2s 3;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,.3));
+    transition: transform .15s;
+    padding: 0;
+  }
+  .pokeball-fab:active { transform: scale(.9); }
 
-/* Etiquette cards */
-.rule-card{
-background:#fff;border-radius:var(--radius);padding:16px;margin:8px 0;
-border-left:4px solid var(--grass);box-shadow:var(--shadow);
-display:flex;gap:12px;align-items:flex-start;
-}
-.rule-icon{font-size:28px;flex-shrink:0;line-height:1}
-.rule-card .rule-title{font-weight:700;font-size:14px;margin-bottom:4px}
-.rule-card .rule-desc{font-size:13px;color:#666;line-height:1.5}
+  /* Hide chrome during onboarding */
+  app-shell.onboarding-active .header,
+  app-shell.onboarding-active .bottom-nav,
+  app-shell.onboarding-active .pokeball-fab { display: none !important; }
 
-/* Kansai cards */
-.kansai-card{
-background:#fff;border-radius:var(--radius);padding:16px;margin:8px 0;
-border-left:4px solid var(--electric);box-shadow:var(--shadow);
-}
-.kansai-card .dialect{font-size:22px;font-weight:700;color:#b8860b;margin-bottom:2px}
-.kansai-card .romaji{font-size:13px;color:#b8860b;font-style:italic;margin-bottom:4px;opacity:.7}
-.kansai-card .standard{font-size:13px;color:#888;margin-bottom:4px}
-.kansai-card .meaning{font-size:14px;font-weight:600}
+  /* Screen container clearance for FAB */
+  #screen-container { padding-bottom: 80px; scroll-padding-bottom: 80px; }
+  @keyframes fabPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
 
-.kansai-tip{
-background:var(--electric-bg);border:2px dashed var(--electric-border);
-border-radius:var(--radius);padding:16px;margin:8px 0;
-}
-.kansai-tip .tip-region{
-font-family:'Press Start 2P',monospace;font-size:8px;color:#b8860b;margin-bottom:8px;
-}
-.kansai-tip .tip-text{font-size:14px;line-height:1.6;color:#555}
+  /* ===== DIALOGUE BOX ===== */
+  .dialogue-box {
+    position: fixed; bottom: calc(80px + env(safe-area-inset-bottom)); left: 12px; right: 12px;
+    z-index: 150;
+    background: #fff; border: 3px solid var(--poke-dark); border-radius: 12px;
+    padding: 16px 18px; min-height: 60px;
+    box-shadow: 0 -4px 20px rgba(0,0,0,.15);
+    display: none;
+  }
+  .dialogue-box.show { display: block; animation: dialogueIn .2s ease; }
+  @keyframes dialogueIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .dialogue-text { font-size: 14px; line-height: 1.5; font-weight: 600; }
+  .dialogue-continue {
+    font-family: 'Press Start 2P', monospace; font-size: 9px; color: var(--poke-red);
+    text-align: right; margin-top: 8px; animation: bounce 1s infinite;
+  }
+  @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
 
-/* ===== BATTLE MODE ===== */
-.battle-menu{display:flex;flex-direction:column;gap:12px;padding-top:8px}
-.battle-category{
-background:#fff;border-radius:var(--radius);padding:20px;
-border:3px solid;cursor:pointer;box-shadow:var(--shadow);
-display:flex;align-items:center;gap:16px;
-transition:transform .15s,box-shadow .15s;
-}
-.battle-category:active{transform:scale(.97)}
-.battle-category[data-type="fire"]{border-color:var(--fire)}
-.battle-category[data-type="water"]{border-color:var(--water)}
-.battle-category[data-type="grass"]{border-color:var(--grass)}
-.battle-category[data-type="electric"]{border-color:var(--electric)}
-.battle-cat-icon{font-size:36px;flex-shrink:0}
-.battle-cat-info{flex:1}
-.battle-cat-info h3{font-family:'Press Start 2P',monospace;font-size:9px;margin-bottom:6px}
-.battle-cat-info p{font-size:12px;color:#888}
-.battle-cat-badge{width:36px;height:36px;border-radius:50%;background:#eee;
-display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.battle-cat-badge.earned{background:var(--poke-yellow);box-shadow:0 0 12px rgba(245,200,66,.5)}
+  /* ===== TOAST ===== */
+  .toast {
+    position: fixed; bottom: calc(90px + env(safe-area-inset-bottom)); left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--poke-dark); color: #fff; padding: 10px 20px;
+    border-radius: 12px; font-size: 13px; font-weight: 600;
+    opacity: 0; transition: all .3s ease; z-index: 300;
+    pointer-events: none; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-/* Badge Case */
-.badge-case{
-background:linear-gradient(135deg,#3a3a6e,var(--poke-dark));
-border-radius:var(--radius);padding:20px;margin-bottom:20px;
-box-shadow:var(--shadow);
-}
-.badge-case h3{font-family:'Press Start 2P',monospace;font-size:9px;color:var(--poke-yellow);margin-bottom:16px;text-align:center}
-.badge-slots{display:flex;justify-content:center;gap:16px;flex-wrap:wrap}
-.badge-slot{
-width:60px;height:60px;border-radius:50%;
-background:rgba(255,255,255,.08);border:2px dashed rgba(255,255,255,.2);
-display:flex;align-items:center;justify-content:center;
-transition:all .3s;position:relative;
-}
-.badge-slot.earned{
-border:2px solid var(--poke-yellow);background:rgba(245,200,66,.15);
-box-shadow:0 0 20px rgba(245,200,66,.3);animation:badgeGlow 2s infinite;
-}
-.badge-slot .badge-icon{font-size:28px;filter:grayscale(1) opacity(.3)}
-.badge-slot.earned .badge-icon{filter:none;animation:badgePop .5s ease}
-.badge-slot .badge-label{
-position:absolute;bottom:-18px;font-family:'Press Start 2P',monospace;
-font-size:5px;color:rgba(255,255,255,.5);white-space:nowrap;
-}
-.badge-slot.earned .badge-label{color:var(--poke-yellow)}
-@keyframes badgeGlow{0%,100%{box-shadow:0 0 10px rgba(245,200,66,.2)}50%{box-shadow:0 0 25px rgba(245,200,66,.5)}}
-@keyframes badgePop{0%{transform:scale(0) rotate(-180deg)}60%{transform:scale(1.3) rotate(10deg)}100%{transform:scale(1) rotate(0)}}
+  /* ===== MODAL ===== */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 300;
+    display: none; align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-overlay.show { display: flex; }
 
-/* ===== BATTLE SCREEN ===== */
-.battle-screen{display:none;animation:fadeIn .3s ease}
-.battle-screen.active{display:block}
-.battle-encounter{
-text-align:center;padding:30px 20px;
-animation:encounterSlide .5s ease;
-}
-@keyframes encounterSlide{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
-
-.battle-hp{
-background:#333;border-radius:20px;height:10px;margin:12px 0;overflow:hidden;
-border:2px solid var(--poke-dark);
-}
-.battle-hp-fill{
-height:100%;border-radius:20px;transition:width .4s ease;
-background:linear-gradient(90deg,var(--poke-red),#ff6b6b);
-}
-.battle-hp-fill.high{background:linear-gradient(90deg,var(--matcha),#6dd670)}
-.battle-hp-fill.mid{background:linear-gradient(90deg,var(--poke-yellow),#ffe066)}
-
-.battle-question{
-background:#fff;border-radius:var(--radius);padding:24px 20px;margin:16px 0;
-box-shadow:var(--shadow);border:3px solid var(--poke-dark);
-min-height:100px;display:flex;align-items:center;justify-content:center;
-flex-direction:column;
-}
-.battle-question .question-label{
-font-family:'Press Start 2P',monospace;font-size:8px;color:#aaa;margin-bottom:12px;
-}
-.battle-question .question-text{font-size:18px;font-weight:700;text-align:center;line-height:1.4}
-.battle-question .question-kanji{font-size:64px;margin:8px 0}
-.battle-question .question-sub{font-size:13px;color:#888;margin-top:4px}
-
-.battle-options{display:flex;flex-direction:column;gap:10px;margin:12px 0}
-.battle-opt{
-background:#fff;border:3px solid #ddd;border-radius:12px;padding:14px 18px;
-font-size:15px;font-weight:600;cursor:pointer;transition:all .15s;
-text-align:left;font-family:'Quicksand',sans-serif;
-}
-.battle-opt:active{transform:scale(.97)}
-.battle-opt.correct{border-color:var(--matcha);background:#e8f5e9;animation:optionCorrect .3s ease}
-.battle-opt.wrong{border-color:var(--poke-red);background:#ffebee;animation:optionWrong .4s ease}
-@keyframes optionCorrect{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1)}}
-@keyframes optionWrong{0%{transform:translateX(0)}25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-4px)}100%{transform:translateX(0)}}
-
-/* True/False buttons */
-.tf-options{display:flex;gap:12px;margin:12px 0}
-.tf-btn{
-flex:1;padding:18px;border-radius:12px;border:3px solid;
-font-family:'Press Start 2P',monospace;font-size:11px;cursor:pointer;
-transition:all .15s;
-}
-.tf-btn.true-btn{border-color:var(--matcha);background:var(--grass-bg);color:var(--grass)}
-.tf-btn.false-btn{border-color:var(--poke-red);background:#ffebee;color:var(--poke-red)}
-.tf-btn:active{transform:scale(.95)}
-.tf-btn.correct{animation:optionCorrect .3s ease}
-.tf-btn.wrong{animation:optionWrong .4s ease;opacity:.5}
-
-/* Combo display */
-.combo-display{
-position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
-z-index:200;pointer-events:none;
-font-family:'Press Start 2P',monospace;
-animation:comboFlash .8s ease forwards;
-text-shadow:3px 3px 0 rgba(0,0,0,.2);
-}
-@keyframes comboFlash{
-0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}
-30%{opacity:1;transform:translate(-50%,-50%) scale(1.3)}
-70%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}
-100%{opacity:0;transform:translate(-50%,-60%) scale(1)}
+  /* ===== iOS INSTALL BANNER ===== */
+  .install-banner {
+    position: fixed;
+    top: calc(70px + env(safe-area-inset-top));
+    left: 12px; right: 12px;
+    z-index: 200;
+    background: var(--poke-dark); color: #fff;
+    padding: 12px 16px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 12px; font-weight: 600;
+    box-shadow: var(--shadow);
+    animation: dialogueIn .3s ease;
+  }
+  .install-dismiss {
+    background: none; border: none; color: #fff; font-size: 18px; cursor: pointer;
+    padding: 0 4px;
+  }
 }
 
-/* Pokeball animation */
-.pokeball-anim{
-position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
-z-index:200;pointer-events:none;
+@layer utilities {
+  .screen { position: relative; z-index: 1; }
 }
-.pokeball-svg{width:80px;height:80px}
-.pokeball-anim.catching .pokeball-svg{animation:pokeShake 1.8s ease forwards}
-.pokeball-anim.caught .pokeball-svg{animation:pokeCatch .4s ease forwards}
-.pokeball-anim.fled{animation:pokeFlee .6s ease forwards}
-@keyframes pokeShake{
-0%{transform:translateY(-60px)}
-15%{transform:translateY(0)}
-25%{transform:rotate(-20deg)}
-35%{transform:rotate(20deg)}
-45%{transform:rotate(-15deg)}
-55%{transform:rotate(15deg)}
-65%{transform:rotate(-8deg)}
-75%{transform:rotate(0deg)}
-100%{transform:rotate(0deg) scale(1)}
-}
-@keyframes pokeCatch{
-0%{transform:scale(1)}
-50%{transform:scale(1.2)}
-100%{transform:scale(0);opacity:0}
-}
-@keyframes pokeFlee{
-0%{opacity:1;transform:translate(-50%,-50%)}
-100%{opacity:0;transform:translate(-50%,-100%) scale(0.3)}
-}
-
-/* ===== DIALOGUE BOX ===== */
-.dialogue-box{
-position:fixed;bottom:80px;left:12px;right:12px;z-index:150;
-background:#fff;border:3px solid var(--poke-dark);border-radius:12px;
-padding:16px 18px;min-height:60px;
-box-shadow:0 -4px 20px rgba(0,0,0,.15);
-display:none;
-}
-.dialogue-box.show{display:block;animation:dialogueIn .2s ease}
-@keyframes dialogueIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.dialogue-text{font-size:14px;line-height:1.5;font-weight:600}
-.dialogue-text .typewriter{border-right:2px solid var(--poke-dark);animation:blink .6s infinite}
-@keyframes blink{0%,100%{border-color:transparent}50%{border-color:var(--poke-dark)}}
-.dialogue-continue{
-font-family:'Press Start 2P',monospace;font-size:7px;color:var(--poke-red);
-text-align:right;margin-top:8px;animation:bounce 1s infinite;
-}
-@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
-
-/* ===== RESULTS SCREEN ===== */
-.results-screen{text-align:center;padding:20px}
-.results-pokeball{font-size:60px;margin:10px 0;animation:resultsBounce 1s ease}
-@keyframes resultsBounce{0%{transform:scale(0) rotate(-180deg)}60%{transform:scale(1.2) rotate(10deg)}100%{transform:scale(1) rotate(0)}}
-.results-title{font-family:'Press Start 2P',monospace;font-size:14px;margin:12px 0;line-height:1.6}
-.results-stats{
-background:#fff;border-radius:var(--radius);padding:20px;margin:16px 0;
-border:3px solid var(--poke-dark);box-shadow:var(--shadow);text-align:left;
-}
-.results-stats .stat-row{
-display:flex;justify-content:space-between;padding:8px 0;
-border-bottom:1px solid #eee;font-size:14px;
-}
-.results-stats .stat-row:last-child{border:none}
-.results-stats .stat-label{color:#888}
-.results-stats .stat-value{font-weight:700}
-.results-rank{
-font-family:'Press Start 2P',monospace;font-size:10px;
-padding:12px 20px;border-radius:12px;display:inline-block;margin:12px 0;line-height:1.6;
-}
-.results-rank.master{background:linear-gradient(135deg,var(--poke-yellow),#FFE066);color:var(--poke-dark)}
-.results-rank.ace{background:linear-gradient(135deg,var(--sakura),#FFD4E0);color:var(--poke-dark)}
-.results-rank.trainer{background:linear-gradient(135deg,var(--water-bg),#d0e8ff);color:var(--water)}
-.results-rank.youngster{background:var(--cream-dark);color:#888}
-.btn-primary{
-background:var(--poke-red);color:#fff;border:3px solid var(--poke-dark);
-border-radius:12px;padding:14px 28px;font-family:'Press Start 2P',monospace;
-font-size:9px;cursor:pointer;box-shadow:0 4px 0 #a02808;
-transition:all .1s;margin:6px;
-}
-.btn-primary:active{transform:translateY(2px);box-shadow:0 2px 0 #a02808}
-.btn-secondary{
-background:#fff;color:var(--poke-dark);border:3px solid var(--poke-dark);
-border-radius:12px;padding:14px 28px;font-family:'Press Start 2P',monospace;
-font-size:9px;cursor:pointer;box-shadow:0 4px 0 #ccc;
-transition:all .1s;margin:6px;
-}
-.btn-secondary:active{transform:translateY(2px);box-shadow:0 2px 0 #ccc}
-
-/* ===== TRAINER CARD MODAL ===== */
-.modal-overlay{
-position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;
-display:none;align-items:center;justify-content:center;padding:20px;
-}
-.modal-overlay.show{display:flex;animation:fadeIn .2s ease}
-.trainer-card{
-background:linear-gradient(145deg,#fff8ee,#fff);border:4px solid var(--poke-dark);
-border-radius:20px;padding:24px;width:100%;max-width:360px;
-box-shadow:0 10px 40px rgba(0,0,0,.3);position:relative;
-}
-.trainer-card::before{
-content:'';position:absolute;top:8px;left:8px;right:8px;bottom:8px;
-border:2px solid var(--poke-yellow);border-radius:14px;pointer-events:none;
-}
-.tc-header{text-align:center;margin-bottom:16px}
-.tc-header h2{font-family:'Press Start 2P',monospace;font-size:11px;color:var(--poke-red);margin-bottom:4px}
-.tc-header p{font-size:11px;color:#aaa}
-.tc-name{
-display:flex;align-items:center;gap:8px;margin-bottom:16px;padding:0 8px;
-}
-.tc-name label{font-family:'Press Start 2P',monospace;font-size:7px;color:#888;flex-shrink:0}
-.tc-name input{
-flex:1;border:2px solid #ddd;border-radius:8px;padding:8px 12px;
-font-family:'Quicksand',sans-serif;font-size:15px;font-weight:700;
-outline:none;transition:border-color .2s;
-}
-.tc-name input:focus{border-color:var(--poke-blue)}
-.tc-stats{
-display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;padding:0 8px;
-}
-.tc-stat{
-background:var(--cream);border-radius:10px;padding:12px;text-align:center;
-}
-.tc-stat .stat-num{font-family:'Press Start 2P',monospace;font-size:16px;color:var(--poke-dark)}
-.tc-stat .stat-lbl{font-size:10px;color:#888;margin-top:4px}
-.tc-badges{padding:0 8px}
-.tc-badges h4{font-family:'Press Start 2P',monospace;font-size:8px;color:#888;margin-bottom:10px}
-.tc-badge-row{display:flex;gap:10px;justify-content:center}
-.tc-badge-item{text-align:center}
-.tc-badge-item .badge-circle{
-width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-font-size:22px;background:#eee;margin:0 auto 4px;
-}
-.tc-badge-item .badge-circle.earned{background:var(--poke-yellow)}
-.tc-badge-item .badge-name{font-size:8px;color:#aaa;font-family:'Press Start 2P',monospace}
-.tc-close{
-position:absolute;top:14px;right:14px;background:none;border:none;
-font-size:22px;cursor:pointer;z-index:10;color:#aaa;
-}
-.tc-close:hover{color:var(--poke-dark)}
-
-/* Streak indicator in battle */
-.streak-indicator{
-font-family:'Press Start 2P',monospace;font-size:8px;text-align:center;
-color:var(--poke-yellow);margin:8px 0;min-height:16px;
-}
-.streak-indicator.on{text-shadow:0 0 10px rgba(245,200,66,.5)}
-
-/* Progress info */
-.progress-info{
-display:flex;justify-content:space-between;align-items:center;
-font-family:'Press Start 2P',monospace;font-size:8px;color:#888;
-margin-bottom:6px;
-}
-
-/* Encounter title */
-.encounter-title{
-font-family:'Press Start 2P',monospace;font-size:12px;
-margin-bottom:16px;line-height:1.6;
-animation:encounterText .5s ease;
-}
-@keyframes encounterText{from{opacity:0}to{opacity:1}}
-
-/* Search bar */
-.search-bar{
-background:#fff;border:2px solid #e0d8cc;border-radius:12px;
-padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:8px;
-}
-.search-bar input{
-border:none;outline:none;font-family:'Quicksand',sans-serif;font-size:14px;
-flex:1;background:transparent;
-}
-.search-bar svg{width:18px;height:18px;color:#aaa;flex-shrink:0}
-.search-bar .clear-search{
-background:none;border:none;font-size:18px;color:#aaa;cursor:pointer;
-display:none;padding:0 4px;
-}
-.search-bar .clear-search.show{display:block}
-
-.no-results{text-align:center;padding:40px 20px;color:#aaa}
-.no-results .pixel{font-size:9px;margin-top:8px}
 </style>
 </head>
 <body>
-
-<!-- HEADER -->
-<header class="header">
-  <h1>Japan Guide<span>Pokédex Edition ⛩️</span></h1>
-  <button class="trainer-btn" onclick="openTrainerCard()" aria-label="Trainer Card">🎒</button>
-</header>
-
-<!-- POKEDEX SCREEN -->
-<div id="pokedex-screen" class="screen active">
-  <div class="search-bar">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-    <input type="text" id="dex-search" placeholder="Search phrases, kanji, rules..." oninput="filterDex()">
-    <button class="clear-search" id="clear-search-btn" onclick="clearSearch()">×</button>
-  </div>
-  <div class="category-tabs">
-    <button class="type-tab active" data-type="fire" onclick="switchDexTab('fire')">🔥 Phrases</button>
-    <button class="type-tab" data-type="water" onclick="switchDexTab('water')">💧 Kanji</button>
-    <button class="type-tab" data-type="grass" onclick="switchDexTab('grass')">🌿 Etiquette</button>
-    <button class="type-tab" data-type="electric" onclick="switchDexTab('electric')">⚡ Kansai</button>
-  </div>
-  <div id="dex-content"></div>
-</div>
-
-<!-- BATTLE SCREEN -->
-<div id="battle-screen" class="screen">
-  <div id="battle-menu">
-    <div class="badge-case">
-      <h3>🏅 GYM BADGES</h3>
-      <div class="badge-slots" id="badge-slots">
-        <div class="badge-slot" data-badge="fire"><span class="badge-icon">🔥</span><span class="badge-label">PHRASES</span></div>
-        <div class="badge-slot" data-badge="water"><span class="badge-icon">💧</span><span class="badge-label">KANJI</span></div>
-        <div class="badge-slot" data-badge="grass"><span class="badge-icon">🌿</span><span class="badge-label">ETIQUETTE</span></div>
-        <div class="badge-slot" data-badge="electric"><span class="badge-icon">⚡</span><span class="badge-label">KANSAI</span></div>
-      </div>
-    </div>
-    <div class="battle-menu" id="battle-categories"></div>
-  </div>
-  <div class="battle-screen" id="battle-active"></div>
-  <div class="battle-screen" id="battle-results"></div>
-</div>
-
-<!-- BOTTOM NAV -->
-<nav class="bottom-nav">
-  <button class="nav-btn active" data-screen="pokedex" onclick="switchScreen('pokedex')">
-    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
-    POKÉDEX
-  </button>
-  <button class="nav-btn" data-screen="battle" onclick="switchScreen('battle')">
-    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12h4l-1.5-3L12 12l7.5-3L18 12h4c0-5.52-4.48-10-10-10zM2 12c0 5.52 4.48 10 10 10s10-4.48 10-10h-4l1.5 3L12 12l-7.5 3L6 12H2z"/></svg>
-    BATTLE
-  </button>
-</nav>
-
-<!-- DIALOGUE BOX -->
-<div class="dialogue-box" id="dialogue-box">
-  <div class="dialogue-text" id="dialogue-text"></div>
-  <div class="dialogue-continue" id="dialogue-continue">▼ TAP</div>
-</div>
-
-<!-- TRAINER CARD MODAL -->
-<div class="modal-overlay" id="trainer-modal">
-  <div class="trainer-card">
-    <button class="tc-close" onclick="closeTrainerCard()">✕</button>
-    <div class="tc-header">
-      <h2>TRAINER CARD</h2>
-      <p>Japan Pokédex Edition</p>
-    </div>
-    <div class="tc-name">
-      <label>NAME:</label>
-      <input type="text" id="trainer-name" placeholder="Enter your name..." maxlength="16" onchange="saveTrainerName()">
-    </div>
-    <div class="tc-stats">
-      <div class="tc-stat"><div class="stat-num" id="tc-catches">0</div><div class="stat-lbl">Total Catches</div></div>
-      <div class="tc-stat"><div class="stat-num" id="tc-badges">0</div><div class="stat-lbl">Badges</div></div>
-      <div class="tc-stat"><div class="stat-num" id="tc-best-combo">0</div><div class="stat-lbl">Best Combo</div></div>
-      <div class="tc-stat"><div class="stat-num" id="tc-quizzes">0</div><div class="stat-lbl">Quizzes Done</div></div>
-    </div>
-    <div class="tc-badges">
-      <h4>BADGE CASE</h4>
-      <div class="tc-badge-row" id="tc-badge-row"></div>
-    </div>
-  </div>
-</div>
-
-<script>
-// ===== DATA =====
-const PHRASES = [
-  // Greetings
-  {group:"Greetings",en:"Hello (daytime)",jp:"こんにちは",romaji:"Konnichiwa"},
-  {group:"Greetings",en:"Good morning",jp:"おはようございます",romaji:"Ohayou gozaimasu"},
-  {group:"Greetings",en:"Good evening",jp:"こんばんは",romaji:"Konbanwa"},
-  {group:"Greetings",en:"Goodbye",jp:"さようなら",romaji:"Sayounara"},
-  {group:"Greetings",en:"See you later",jp:"またね",romaji:"Mata ne"},
-  {group:"Greetings",en:"Excuse me / Sorry",jp:"すみません",romaji:"Sumimasen"},
-  {group:"Greetings",en:"I'm sorry",jp:"ごめんなさい",romaji:"Gomennasai"},
-  {group:"Greetings",en:"Thank you very much",jp:"ありがとうございます",romaji:"Arigatou gozaimasu"},
-  {group:"Greetings",en:"Nice to meet you",jp:"はじめまして",romaji:"Hajimemashite"},
-  // Restaurant
-  {group:"Restaurant",en:"One, please (entering)",jp:"一人です / 二人です",romaji:"Hitori desu / Futari desu"},
-  {group:"Restaurant",en:"This one, please",jp:"これください",romaji:"Kore kudasai"},
-  {group:"Restaurant",en:"How much is this?",jp:"いくらですか？",romaji:"Ikura desu ka?"},
-  {group:"Restaurant",en:"Delicious!",jp:"おいしい！",romaji:"Oishii!"},
-  {group:"Restaurant",en:"Thank you for the meal (before)",jp:"いただきます",romaji:"Itadakimasu"},
-  {group:"Restaurant",en:"Thank you for the meal (after)",jp:"ごちそうさまでした",romaji:"Gochisousama deshita"},
-  {group:"Restaurant",en:"Check, please",jp:"お会計おねがいします",romaji:"Okaikei onegaishimasu"},
-  {group:"Restaurant",en:"Water, please",jp:"お水ください",romaji:"Omizu kudasai"},
-  {group:"Restaurant",en:"No [item], please",jp:"〜なしでおねがいします",romaji:"~nashi de onegaishimasu"},
-  // Shopping
-  {group:"Shopping",en:"Please (requesting)",jp:"おねがいします",romaji:"Onegaishimasu"},
-  {group:"Shopping",en:"I'm just looking",jp:"見ているだけです",romaji:"Mite iru dake desu"},
-  {group:"Shopping",en:"Do you have...?",jp:"〜はありますか？",romaji:"~wa arimasu ka?"},
-  {group:"Shopping",en:"Can I try this on?",jp:"試着してもいいですか？",romaji:"Shichaku shitemo ii desu ka?"},
-  {group:"Shopping",en:"Tax-free, please",jp:"免税おねがいします",romaji:"Menzei onegaishimasu"},
-  // Konbini & Practical
-  {group:"Konbini",en:"Bag, please / No bag",jp:"袋ください / 袋いらないです",romaji:"Fukuro kudasai / Fukuro iranai desu"},
-  {group:"Konbini",en:"Payment method?",jp:"お支払い方法は？",romaji:"Oshiharai houhou wa?"},
-  {group:"Konbini",en:"IC card (Suica/ICOCA)",jp:"ICカードで",romaji:"IC kaado de"},
-  {group:"Konbini",en:"Cash, please",jp:"現金で",romaji:"Genkin de"},
-  {group:"Konbini",en:"Do you want it heated?",jp:"温めますか？",romaji:"Atatamemasu ka?"},
-  {group:"Konbini",en:"Yes, please heat it",jp:"おねがいします",romaji:"Onegaishimasu"},
-  {group:"Konbini",en:"No chopsticks needed",jp:"お箸いらないです",romaji:"Ohashi iranai desu"},
-  {group:"Konbini",en:"Can I use the toilet?",jp:"トイレ使ってもいいですか？",romaji:"Toire tsukatte mo ii desu ka?"},
-  // Pokemon Easter Eggs
-  {group:"Pokemon",en:"I want to be the very best!",jp:"誰よりも強くなりたい！",romaji:"Dare yori mo tsuyoku naritai!"},
-  {group:"Pokemon",en:"Pikachu, I choose you!",jp:"ピカチュウ、きみにきめた！",romaji:"Pikachuu, kimi ni kimeta!"},
-  {group:"Pokemon",en:"Gotta catch 'em all!",jp:"ポケモンゲットだぜ！",romaji:"Pokemon getto da ze!"},
-  {group:"Pokemon",en:"It's super effective!",jp:"効果はバツグンだ！",romaji:"Kouka wa batsugun da!"},
-  {group:"Pokemon",en:"A wild [X] appeared!",jp:"野生の〜が現れた！",romaji:"Yasei no ~ ga arawareta!"},
-  {group:"Pokemon",en:"Pokemon Center (real places!)",jp:"ポケモンセンター",romaji:"Pokemon Sentaa — visit one in Osaka!"},
-  // Directions
-  {group:"Directions",en:"Where is...?",jp:"〜はどこですか？",romaji:"~wa doko desu ka?"},
-  {group:"Directions",en:"Where is the station?",jp:"駅はどこですか？",romaji:"Eki wa doko desu ka?"},
-  {group:"Directions",en:"Where is the toilet?",jp:"トイレはどこですか？",romaji:"Toire wa doko desu ka?"},
-  {group:"Directions",en:"Please wait a moment",jp:"ちょっと待ってください",romaji:"Chotto matte kudasai"},
-  {group:"Directions",en:"Yes / No",jp:"はい / いいえ",romaji:"Hai / Iie"},
-  // Emergency
-  {group:"Emergency",en:"Help!",jp:"助けて！",romaji:"Tasukete!"},
-  {group:"Emergency",en:"I don't understand",jp:"わかりません",romaji:"Wakarimasen"},
-  {group:"Emergency",en:"Do you speak English?",jp:"英語は話せますか？",romaji:"Eigo wa hanasemasu ka?"},
-  {group:"Emergency",en:"Please call an ambulance",jp:"救急車を呼んでください",romaji:"Kyuukyuusha wo yonde kudasai"},
-  {group:"Emergency",en:"I'm lost",jp:"道に迷いました",romaji:"Michi ni mayoimashita"},
-  {group:"Emergency",en:"I'm allergic to...",jp:"〜アレルギーがあります",romaji:"~arerugii ga arimasu"},
-];
-
-const KANJI = [
-  {kanji:"男",reading:"おとこ (otoko)",meaning:"Man"},
-  {kanji:"女",reading:"おんな (onna)",meaning:"Woman"},
-  {kanji:"出口",reading:"でぐち (deguchi)",meaning:"Exit"},
-  {kanji:"入口",reading:"いりぐち (iriguchi)",meaning:"Entrance"},
-  {kanji:"禁煙",reading:"きんえん (kin'en)",meaning:"No Smoking"},
-  {kanji:"駅",reading:"えき (eki)",meaning:"Station"},
-  {kanji:"北",reading:"きた (kita)",meaning:"North"},
-  {kanji:"南",reading:"みなみ (minami)",meaning:"South"},
-  {kanji:"東",reading:"ひがし (higashi)",meaning:"East"},
-  {kanji:"西",reading:"にし (nishi)",meaning:"West"},
-  {kanji:"円",reading:"えん (en)",meaning:"Yen"},
-  {kanji:"無料",reading:"むりょう (muryou)",meaning:"Free (no cost)"},
-  {kanji:"有料",reading:"ゆうりょう (yuuryou)",meaning:"Paid"},
-  {kanji:"注意",reading:"ちゅうい (chuui)",meaning:"Caution"},
-  {kanji:"押",reading:"おす (osu)",meaning:"Push"},
-  {kanji:"引",reading:"ひく (hiku)",meaning:"Pull"},
-  {kanji:"空",reading:"あき (aki)",meaning:"Vacant"},
-  {kanji:"満",reading:"まん (man)",meaning:"Full (occupied)"},
-  {kanji:"お手洗い",reading:"おてあらい (otearai)",meaning:"Toilet / Restroom"},
-  {kanji:"危険",reading:"きけん (kiken)",meaning:"Danger"},
-  {kanji:"止まれ",reading:"とまれ (tomare)",meaning:"Stop"},
-  {kanji:"食",reading:"しょく (shoku)",meaning:"Food / Eat"},
-  {kanji:"飲",reading:"いん (in)",meaning:"Drink"},
-  {kanji:"温泉",reading:"おんせん (onsen)",meaning:"Hot Spring"},
-  {kanji:"神社",reading:"じんじゃ (jinja)",meaning:"Shrine"},
-  {kanji:"寺",reading:"てら (tera)",meaning:"Temple"},
-  {kanji:"大",reading:"おお (oo)",meaning:"Big / Large"},
-  {kanji:"小",reading:"しょう (shou)",meaning:"Small"},
-  {kanji:"右",reading:"みぎ (migi)",meaning:"Right"},
-  {kanji:"左",reading:"ひだり (hidari)",meaning:"Left"},
-];
-
-const ETIQUETTE = [
-  {icon:"🚃",title:"No phone calls on trains",desc:"Never make or take phone calls on trains. Set your phone to silent (manner mode). Texting is fine."},
-  {icon:"🤫",title:"Be quiet on public transport",desc:"Keep conversations low on trains and buses. Avoid talking on the phone entirely. Many locals nap on the train — let them rest."},
-  {icon:"💺",title:"Priority seating",desc:"Priority seats (marked in a different color) are for elderly, pregnant, disabled, and those with small children. Give up your seat if needed."},
-  {icon:"↗️",title:"Escalator: Stand RIGHT in Kansai",desc:"In Osaka and Kansai region, stand on the RIGHT side of escalators and walk on the left. (Opposite of Tokyo where you stand left!)"},
-  {icon:"👟",title:"Remove shoes indoors",desc:"Always remove shoes when entering homes, temples, ryokans, some restaurants, and fitting rooms. Look for a genkan (entryway) or shoe shelves."},
-  {icon:"🚫",title:"Never tip — anywhere",desc:"Tipping is not a custom in Japan and can even be considered rude. The price is the price. Good service is the standard."},
-  {icon:"🙇",title:"Bow as greeting",desc:"A slight bow (15-30°) is the standard greeting. Deeper bows show more respect. A head nod works fine for casual situations as a tourist."},
-  {icon:"🚶",title:"Don't eat while walking",desc:"Eating while walking is considered bad manners. Find a bench, stand by the stall where you bought it, or eat at designated areas."},
-  {icon:"🗑️",title:"Carry your trash",desc:"Public trash cans are extremely rare. Carry a small bag for your trash. You'll find bins at convenience stores and some vending machines."},
-  {icon:"♨️",title:"Onsen etiquette",desc:"Wash thoroughly before entering the bath. No swimsuits. Tie long hair up. Don't put your towel in the water. Many onsens don't allow tattoos (check first)."},
-  {icon:"🥢",title:"Chopstick rules",desc:"Never stick chopsticks upright in rice (funeral ritual). Never pass food chopstick-to-chopstick. Don't point with them or hover over dishes."},
-  {icon:"🤧",title:"No nose-blowing in public",desc:"Blowing your nose in public (especially at the table) is considered rude. Excuse yourself to the restroom. Sniffling is more acceptable."},
-  {icon:"🙏",title:"Say itadakimasu & gochisousama",desc:"Say 'itadakimasu' (I humbly receive) before eating and 'gochisousama deshita' (it was a feast) after. It shows gratitude."},
-  {icon:"💴",title:"Use the cash tray",desc:"When paying, place money on the small tray at the register, never hand it directly. Take change from the tray too."},
-  {icon:"🏛️",title:"Temple & shrine manners",desc:"Bow before entering a torii gate. Wash hands at temizuya. Walk to the side of the path (center is for gods). Don't touch sacred objects."},
-];
-
-const KANSAI_DIALECT = [
-  {dialect:"おおきに",romaji:"Ookini",standard:"ありがとう (arigatou)",meaning:"Thank you — Kansai classic"},
-  {dialect:"あかん",romaji:"Akan",standard:"だめ (dame)",meaning:"No good / Not allowed"},
-  {dialect:"なんでやねん",romaji:"Nande ya nen",standard:"なんでだよ (nande da yo)",meaning:"What the heck! / Why! — the signature Osaka tsukkomi"},
-  {dialect:"めっちゃ",romaji:"Meccha",standard:"とても (totemo)",meaning:"Very / Super — used constantly"},
-  {dialect:"おもろい",romaji:"Omoroi",standard:"おもしろい (omoshiroi)",meaning:"Funny / Interesting"},
-  {dialect:"ほんま",romaji:"Honma",standard:"ほんとう (hontou)",meaning:"Really / Truly"},
-  {dialect:"ちゃう",romaji:"Chau",standard:"ちがう (chigau)",meaning:"Different / Wrong / No"},
-  {dialect:"ぼちぼち",romaji:"Bochi bochi",standard:"まあまあ (maa maa)",meaning:"So-so / Getting by"},
-  {dialect:"しゃーない",romaji:"Shaanai",standard:"しょうがない (shouganai)",meaning:"It can't be helped"},
-  {dialect:"いけず",romaji:"Ikezu",standard:"いじわる (ijiwaru)",meaning:"Mean / Nasty — especially Kyoto dialect"},
-  {dialect:"ほな",romaji:"Hona",standard:"じゃあ (jaa)",meaning:"Well then / See ya"},
-  {dialect:"なんぼ",romaji:"Nanbo",standard:"いくら (ikura)",meaning:"How much? — use it at street stalls!"},
-  {dialect:"かまへん",romaji:"Kamahen",standard:"かまわない (kamawanai)",meaning:"No problem / Don't worry about it"},
-  {dialect:"あほ",romaji:"Aho",standard:"ばか (baka)",meaning:"Silly / Stupid — but friendlier than baka in Kansai!"},
-  {dialect:"おかん / おとん",romaji:"Okan / Oton",standard:"お母さん / お父さん",meaning:"Mom / Dad — casual Osaka style"},
-  {dialect:"もうかりまっか",romaji:"Moukari makka",standard:"儲かっていますか",meaning:"Making money? — classic Osaka greeting between shopkeepers"},
-];
-
-const KANSAI_TIPS = [
-  {region:"🐙 OSAKA",text:"Stand on the RIGHT side of escalators. Osaka people walk on the left — the opposite of Tokyo. You'll figure it out instantly."},
-  {region:"🐙 OSAKA",text:"Dotonbori is THE street food heaven. Must-try: takoyaki (octopus balls), okonomiyaki (savory pancake), and kushikatsu (deep-fried skewers on sticks)."},
-  {region:"🐙 OSAKA",text:"Kushikatsu rule: NEVER double-dip in the communal sauce. One dip only! Use the cabbage leaves to scoop extra sauce if needed."},
-  {region:"🐙 OSAKA",text:"Osakans are famously friendly and funny. Don't be surprised if strangers chat you up or crack jokes. Embrace the energy!"},
-  {region:"⛩️ KYOTO",text:"Many temples and gardens close by 4:30-5:00 PM. Plan temple visits for the morning. Some have special evening illumination events in autumn."},
-  {region:"⛩️ KYOTO",text:"In Gion (geisha district), do NOT chase, block, or try to take selfies with geiko/maiko. They are working professionals, not attractions. Respect their space."},
-  {region:"⛩️ KYOTO",text:"Fushimi Inari (thousand torii gates) is open 24/7 and free! Go early morning or evening to avoid crowds. The full hike takes ~2 hours."},
-  {region:"🦌 NARA",text:"The deer in Nara Park will bow to you if you bow first! Buy 'shika senbei' (deer crackers, ¥200) to feed them, but be ready — they can be pushy."},
-  {region:"🦌 NARA",text:"Hide the deer crackers immediately after buying them. If the deer see the crackers, they WILL mob you. Break them into pieces and feed slowly."},
-  {region:"🦌 NARA",text:"Don't tease the deer or hold food above their heads. They can bite and headbutt. Be respectful — they're considered sacred messengers of the gods."},
-  {region:"🐙 OSAKA",text:"Osaka is called 'tenka no daidokoro' (天下の台所) — the Nation's Kitchen. Food culture is EVERYTHING here. Locals say 'kuidaore' (食い倒れ) — eat until you drop!"},
-  {region:"🐙 OSAKA",text:"Osaka's comedy culture (manzai) is legendary. Osakans often set each other up for jokes — the 'boke' (funny person) and 'tsukkomi' (straight man). Don't be surprised by playful banter!"},
-  {region:"🐙 OSAKA",text:"Shinsekai district has a retro, old-school Osaka vibe. Famous for kushikatsu and the Tsutenkaku Tower. It's gritty but full of character — great for evening strolls."},
-  {region:"🐙 OSAKA",text:"There's an actual Pokemon Center store in Osaka (Shinsaibashi/Daimaru)! They sell exclusive regional merch you can't get anywhere else."},
-  {region:"🐙 OSAKA",text:"Osaka's Kuromon Market is the 'Kitchen of Osaka.' Fresh sashimi, tamagoyaki, grilled seafood on sticks — arrive hungry and eat your way through. Best before noon."},
-  {region:"🐙 OSAKA",text:"In Osaka, asking 'moukari makka?' (Making money?) is a casual greeting between acquaintances. The standard reply is 'bochi bochi denna' (so-so). Comedy built into daily life!"},
-  {region:"🐙 OSAKA",text:"Osaka-style okonomiyaki mixes everything INTO the batter before grilling. Hiroshima-style layers it. Mentioning this difference in Osaka is guaranteed banter."},
-  {region:"⛩️ KYOTO",text:"Kyoto has a subtle indirect communication style. 'Your watch is beautiful' from a Kyoto local might mean 'you've overstayed your welcome.' They're famously polite about it!"},
-  {region:"⛩️ KYOTO",text:"Arashiyama Bamboo Grove is most magical at sunrise (6-7 AM). By 10 AM it's packed. The nearby Monkey Park has wild macaques with panoramic city views."},
-  {region:"🗾 KANSAI",text:"Get an ICOCA card (Kansai's IC transport card) at any station. Works on all trains, buses, and even vending machines and konbini. Way easier than buying individual tickets."},
-  {region:"🗾 KANSAI",text:"The Kansai region has its own comedy TV shows, food culture, and distinct personality. Osaka = loud & fun, Kyoto = elegant & subtle, Nara = chill & historic. Each city has its own vibe!"},
-  {region:"🗾 KANSAI",text:"Japanese convenience stores (konbini) are a lifeline. 7-Eleven, Lawson, FamilyMart — they have ATMs, good food, toilets, and you can pay bills and buy event tickets there."},
-];
-
-// ===== QUIZ QUESTION POOLS =====
-function buildPhraseQuestions(){
-  return PHRASES.map(p=>({
-    question: p.en,
-    answer: `${p.jp} (${p.romaji})`,
-    type:'choice',
-    pool: PHRASES.map(x=>`${x.jp} (${x.romaji})`)
-  }));
-}
-
-function buildKanjiQuestions(){
-  return KANJI.map(k=>({
-    question: k.kanji,
-    questionSub: k.reading,
-    answer: k.meaning,
-    type:'kanji',
-    pool: KANJI.map(x=>x.meaning)
-  }));
-}
-
-function buildEtiquetteQuestions(){
-  const qs = [
-    {statement:"You should tip waiters about 10-15% in Japan.",correct:false,explanation:"Never tip in Japan — it's not customary and can be rude!"},
-    {statement:"In Osaka, you should stand on the RIGHT side of the escalator.",correct:true,explanation:"Correct! Osaka/Kansai = stand right. Tokyo = stand left."},
-    {statement:"It's perfectly fine to eat while walking down the street in Japan.",correct:false,explanation:"Eating while walking is considered bad manners. Find a spot to stop!"},
-    {statement:"You should blow your nose at the dinner table rather than sniffle.",correct:false,explanation:"Blowing your nose in public is rude. Sniffling is more acceptable, or go to the restroom."},
-    {statement:"You should wash your whole body BEFORE getting into an onsen bath.",correct:true,explanation:"Always wash and rinse thoroughly at the shower stations before entering the bath!"},
-    {statement:"Phone calls on the train are fine if you keep your voice down.",correct:false,explanation:"Phone calls on trains are a big no-no, even quiet ones. Set to manner mode!"},
-    {statement:"Sticking chopsticks upright in rice is a funeral ritual and very rude.",correct:true,explanation:"This resembles incense at funerals. Never stick chopsticks upright in food!"},
-    {statement:"You should walk down the center of the path at a shrine.",correct:false,explanation:"The center path is reserved for the gods. Walk to the side!"},
-    {statement:"When paying, place your money on the small tray at the register.",correct:true,explanation:"Using the cash tray is standard etiquette. Don't hand money directly."},
-    {statement:"Most onsens welcome people with tattoos.",correct:false,explanation:"Many traditional onsens still ban tattoos. Always check first! Some offer private baths."},
-    {statement:"Priority seats on trains are only for elderly people.",correct:false,explanation:"Priority seats are for elderly, pregnant, disabled, injured, and those with small children."},
-    {statement:"It's customary to say 'itadakimasu' before eating a meal.",correct:true,explanation:"It means 'I humbly receive' and shows gratitude for the food!"},
-    {statement:"You can wear shoes inside a traditional ryokan (Japanese inn).",correct:false,explanation:"Always remove shoes at the entrance (genkan). Slippers are usually provided."},
-    {statement:"Public trash cans are very rare in Japan.",correct:true,explanation:"Carry a small bag for your trash! You'll find bins at convenience stores."},
-    {statement:"A slight bow is a standard greeting in Japan.",correct:true,explanation:"A 15-30° bow is common. Deeper = more respectful. A head nod works casually!"},
-    {statement:"It's fine to pass food to someone chopstick-to-chopstick.",correct:false,explanation:"This mimics a funeral bone-picking ritual. Place food on their plate instead."},
-  ];
-  return qs.map(q=>({...q,type:'tf'}));
-}
-
-function buildKansaiQuestions(){
-  const dialectQs = KANSAI_DIALECT.map(d=>({
-    question: d.dialect,
-    questionSub: d.romaji,
-    answer: d.meaning,
-    type:'choice',
-    pool: KANSAI_DIALECT.map(x=>x.meaning)
-  }));
-  const tfQs = [
-    {statement:"'Ookini' (おおきに) means 'thank you' in Kansai dialect.",correct:true,type:'tf',explanation:"Ookini is the classic Kansai way to say thanks!"},
-    {statement:"In Osaka, you stand on the LEFT side of escalators.",correct:false,type:'tf',explanation:"Osaka = stand RIGHT. It's the opposite of Tokyo!"},
-    {statement:"Kushikatsu sauce can be double-dipped for extra flavor.",correct:false,type:'tf',explanation:"NEVER double-dip! One dip only. Use cabbage for extra sauce."},
-    {statement:"The deer in Nara will bow to you if you bow to them first.",correct:true,type:'tf',explanation:"They've learned this behavior over centuries. Try it!"},
-    {statement:"'Nande ya nen' is a polite way to agree with someone.",correct:false,type:'tf',explanation:"It means 'What the heck!' — it's the classic Osaka tsukkomi (comedic retort)!"},
-    {statement:"Fushimi Inari Shrine is open 24 hours and free to visit.",correct:true,type:'tf',explanation:"It's always open and free! Best visited early morning or evening."},
-    {statement:"'Meccha' means 'a little bit' in Kansai dialect.",correct:false,type:'tf',explanation:"Meccha means 'very' or 'super' — the opposite!"},
-    {statement:"Geiko/Maiko in Gion love taking selfies with tourists.",correct:false,type:'tf',explanation:"Never chase or bother geiko/maiko. They are working professionals."},
-    {statement:"Osaka is nicknamed 'The Nation's Kitchen' (tenka no daidokoro).",correct:true,type:'tf',explanation:"Osaka has been Japan's food capital for centuries. The word 'kuidaore' (eat till you drop) was coined here!"},
-    {statement:"'Aho' is a much more offensive insult than 'baka' in Kansai.",correct:false,type:'tf',explanation:"In Kansai, 'aho' is actually friendlier and more playful than 'baka.' In Tokyo it's the opposite!"},
-    {statement:"Kuromon Market in Osaka is best visited in the evening.",correct:false,type:'tf',explanation:"Kuromon Market is freshest in the morning! Many stalls close by early afternoon."},
-    {statement:"There is a Pokemon Center store you can visit in Osaka.",correct:true,type:'tf',explanation:"Yes! The Pokemon Center Osaka is in Shinsaibashi/Daimaru. They have exclusive regional merch!"},
-    {statement:"'Moukari makka' is how Osaka shopkeepers greet each other.",correct:true,type:'tf',explanation:"It literally means 'Making money?' — the reply is usually 'bochi bochi denna' (so-so). Classic Osaka!"},
-  ];
-  return shuffle([...dialectQs,...tfQs]);
-}
-
-// ===== STATE =====
-let state = loadState();
-let currentQuiz = null;
-let dialogueTimeout = null;
-
-function defaultState(){
-  return {
-    trainerName:'',
-    badges:{fire:false,water:false,grass:false,electric:false},
-    highScores:{fire:0,water:0,grass:0,electric:0},
-    bestCombos:{fire:0,water:0,grass:0,electric:0},
-    totalCatches:0,
-    totalQuizzes:0,
-    bestComboEver:0
-  };
-}
-function loadState(){
-  try{const s=localStorage.getItem('japan-guide-state');return s?{...defaultState(),...JSON.parse(s)}:defaultState()}
-  catch(e){return defaultState()}
-}
-function saveState(){localStorage.setItem('japan-guide-state',JSON.stringify(state))}
-
-// ===== NAVIGATION =====
-function switchScreen(name){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById(name+'-screen').classList.add('active');
-  document.querySelector(`.nav-btn[data-screen="${name}"]`).classList.add('active');
-  if(name==='battle'){renderBattleMenu();closeBattle()}
-  hideDialogue();
-}
-
-// ===== POKEDEX RENDERING =====
-let currentDexTab='fire';
-function switchDexTab(type){
-  currentDexTab=type;
-  document.querySelectorAll('.type-tab').forEach(t=>t.classList.toggle('active',t.dataset.type===type));
-  renderDex();
-}
-
-function filterDex(){
-  const q=document.getElementById('dex-search').value;
-  document.getElementById('clear-search-btn').classList.toggle('show',q.length>0);
-  renderDex();
-}
-function clearSearch(){
-  document.getElementById('dex-search').value='';
-  document.getElementById('clear-search-btn').classList.remove('show');
-  renderDex();
-}
-
-function renderDex(){
-  const q=document.getElementById('dex-search').value.toLowerCase().trim();
-  const container=document.getElementById('dex-content');
-
-  if(currentDexTab==='fire') renderPhrases(container,q);
-  else if(currentDexTab==='water') renderKanji(container,q);
-  else if(currentDexTab==='grass') renderEtiquette(container,q);
-  else renderKansai(container,q);
-}
-
-function renderPhrases(container,q){
-  const groups={};
-  let idx=1;
-  PHRASES.forEach(p=>{
-    if(q && !`${p.en} ${p.jp} ${p.romaji} ${p.group}`.toLowerCase().includes(q)) return;
-    if(!groups[p.group]) groups[p.group]=[];
-    groups[p.group].push({...p,idx:idx++});
-  });
-
-  if(Object.keys(groups).length===0){
-    container.innerHTML=`<div class="no-results">No phrases found<div class="pixel">Try another search!</div></div>`;
-    return;
-  }
-
-  let html='';
-  for(const[group,items]of Object.entries(groups)){
-    html+=`<div class="dex-group-title fire">${getGroupEmoji(group)} ${group}</div>`;
-    items.forEach(p=>{
-      html+=`<div class="dex-card fire">
-        <div class="dex-num">#${String(p.idx).padStart(3,'0')}</div>
-        <div class="en">${p.en}</div>
-        <div class="jp">${p.jp}</div>
-        <div class="romaji">${p.romaji}</div>
-      </div>`;
-    });
-  }
-  container.innerHTML=html;
-}
-
-function getGroupEmoji(g){
-  return{Greetings:'👋',Restaurant:'🍜',Shopping:'🛍️',Directions:'🗺️',Emergency:'🆘',Konbini:'🏪',Pokemon:'⚡'}[g]||'📝';
-}
-
-function renderKanji(container,q){
-  const filtered=KANJI.filter(k=>!q||`${k.kanji} ${k.reading} ${k.meaning}`.toLowerCase().includes(q));
-  if(!filtered.length){
-    container.innerHTML=`<div class="no-results">No kanji found<div class="pixel">Try another search!</div></div>`;
-    return;
-  }
-  let html='<div class="kanji-grid">';
-  filtered.forEach((k,i)=>{
-    html+=`<div class="kanji-card">
-      <div class="kanji-big">${k.kanji}</div>
-      <div class="kanji-reading">${k.reading}</div>
-      <div class="kanji-meaning">${k.meaning}</div>
-    </div>`;
-  });
-  html+='</div>';
-  container.innerHTML=html;
-}
-
-function renderEtiquette(container,q){
-  const filtered=ETIQUETTE.filter(e=>!q||`${e.title} ${e.desc}`.toLowerCase().includes(q));
-  if(!filtered.length){
-    container.innerHTML=`<div class="no-results">No rules found<div class="pixel">Try another search!</div></div>`;
-    return;
-  }
-  let html='';
-  filtered.forEach(e=>{
-    html+=`<div class="rule-card">
-      <div class="rule-icon">${e.icon}</div>
-      <div><div class="rule-title">${e.title}</div><div class="rule-desc">${e.desc}</div></div>
-    </div>`;
-  });
-  container.innerHTML=html;
-}
-
-function renderKansai(container,q){
-  const filteredDialect=KANSAI_DIALECT.filter(d=>!q||`${d.dialect} ${d.romaji} ${d.standard} ${d.meaning}`.toLowerCase().includes(q));
-  const filteredTips=KANSAI_TIPS.filter(t=>!q||`${t.region} ${t.text}`.toLowerCase().includes(q));
-
-  if(!filteredDialect.length && !filteredTips.length){
-    container.innerHTML=`<div class="no-results">No Kansai content found<div class="pixel">Try another search!</div></div>`;
-    return;
-  }
-
-  let html='';
-  if(filteredDialect.length){
-    html+=`<div class="dex-group-title electric">🗣️ Kansai-ben Phrases</div>`;
-    filteredDialect.forEach(d=>{
-      html+=`<div class="kansai-card">
-        <div class="dialect">${d.dialect}</div>
-        <div class="romaji">${d.romaji}</div>
-        <div class="standard">Standard: ${d.standard}</div>
-        <div class="meaning">${d.meaning}</div>
-      </div>`;
-    });
-  }
-  if(filteredTips.length){
-    html+=`<div class="dex-group-title electric">📍 Regional Tips</div>`;
-    filteredTips.forEach(t=>{
-      html+=`<div class="kansai-tip">
-        <div class="tip-region">${t.region}</div>
-        <div class="tip-text">${t.text}</div>
-      </div>`;
-    });
-  }
-  container.innerHTML=html;
-}
-
-// ===== BATTLE MODE =====
-const BATTLE_CATS = [
-  {type:'fire',icon:'🔥',name:'PHRASE MATCH',desc:'Match English phrases to Japanese',questionLabel:'A wild Phrase appeared!'},
-  {type:'water',icon:'💧',name:'KANJI QUIZ',desc:'Identify kanji meanings',questionLabel:'A wild Kanji appeared!'},
-  {type:'grass',icon:'🌿',name:'ETIQUETTE CHECK',desc:'True or false — do you know the rules?',questionLabel:'A wild Rule appeared!'},
-  {type:'electric',icon:'⚡',name:'KANSAI CHALLENGE',desc:'Kansai dialect and regional knowledge',questionLabel:'A wild Kansai-ben appeared!'},
-];
-
-function renderBattleMenu(){
-  const cats=document.getElementById('battle-categories');
-  cats.innerHTML=BATTLE_CATS.map(c=>`
-    <div class="battle-category" data-type="${c.type}" onclick="startBattle('${c.type}')">
-      <div class="battle-cat-icon">${c.icon}</div>
-      <div class="battle-cat-info">
-        <h3>${c.name}</h3>
-        <p>${c.desc}${state.highScores[c.type]?` — Best: ${state.highScores[c.type]}/10`:''}</p>
-      </div>
-      <div class="battle-cat-badge ${state.badges[c.type]?'earned':''}">${state.badges[c.type]?'⭐':'🔒'}</div>
-    </div>
-  `).join('');
-  updateBadgeDisplay();
-}
-
-function updateBadgeDisplay(){
-  document.querySelectorAll('.badge-slot').forEach(slot=>{
-    const type=slot.dataset.badge;
-    slot.classList.toggle('earned',!!state.badges[type]);
-  });
-}
-
-function startBattle(type){
-  const cat=BATTLE_CATS.find(c=>c.type===type);
-  let questions;
-  if(type==='fire') questions=shuffle(buildPhraseQuestions()).slice(0,10);
-  else if(type==='water') questions=shuffle(buildKanjiQuestions()).slice(0,10);
-  else if(type==='grass') questions=shuffle(buildEtiquetteQuestions()).slice(0,10);
-  else questions=shuffle(buildKansaiQuestions()).slice(0,10);
-
-  currentQuiz={type,cat,questions,current:0,score:0,combo:0,bestCombo:0,answered:false};
-
-  document.getElementById('battle-menu').style.display='none';
-  document.getElementById('battle-results').classList.remove('active');
-  const screen=document.getElementById('battle-active');
-  screen.classList.add('active');
-
-  showEncounterIntro(()=>renderQuestion());
-}
-
-function showEncounterIntro(cb){
-  const screen=document.getElementById('battle-active');
-  screen.innerHTML=`
-    <div class="battle-encounter">
-      <div style="font-size:80px;margin-bottom:16px">${currentQuiz.cat.icon}</div>
-      <div class="encounter-title">${currentQuiz.cat.questionLabel}</div>
-      <button class="btn-primary" onclick="this.remove()">FIGHT!</button>
-    </div>
-  `;
-  screen.querySelector('.btn-primary').addEventListener('click',cb);
-}
-
-function renderQuestion(){
-  if(!currentQuiz||currentQuiz.current>=currentQuiz.questions.length){showResults();return}
-
-  const q=currentQuiz.questions[currentQuiz.current];
-  const screen=document.getElementById('battle-active');
-  const progress=(currentQuiz.current/currentQuiz.questions.length)*100;
-  const hpClass=progress<40?'high':progress<70?'mid':'';
-
-  currentQuiz.answered=false;
-
-  let html=`
-    <div class="progress-info">
-      <span>${currentQuiz.current+1} / ${currentQuiz.questions.length}</span>
-      <span>Score: ${currentQuiz.score}</span>
-    </div>
-    <div class="battle-hp"><div class="battle-hp-fill ${hpClass}" style="width:${100-progress}%"></div></div>
-    <div class="streak-indicator ${currentQuiz.combo>=3?'on':''}" id="streak-text">
-      ${currentQuiz.combo>=3?`🔥 Catch Combo x${currentQuiz.combo}!`:''}
-    </div>
-  `;
-
-  if(q.type==='tf'){
-    html+=`
-      <div class="battle-question">
-        <div class="question-label">TRUE OR FALSE?</div>
-        <div class="question-text">${q.statement}</div>
-      </div>
-      <div class="tf-options">
-        <button class="tf-btn true-btn" onclick="answerTF(true)">TRUE</button>
-        <button class="tf-btn false-btn" onclick="answerTF(false)">FALSE</button>
-      </div>
-    `;
-  } else if(q.type==='kanji'){
-    const options=generateOptions(q.answer,q.pool,4);
-    html+=`
-      <div class="battle-question">
-        <div class="question-label">WHAT DOES THIS MEAN?</div>
-        <div class="question-kanji">${q.question}</div>
-        <div class="question-sub">${q.questionSub||''}</div>
-      </div>
-      <div class="battle-options">
-        ${options.map((o,i)=>`<button class="battle-opt" onclick="answerChoice(this,'${escapeAttr(o)}','${escapeAttr(q.answer)}')">${o}</button>`).join('')}
-      </div>
-    `;
-  } else {
-    const options=generateOptions(q.answer,q.pool,4);
-    html+=`
-      <div class="battle-question">
-        <div class="question-label">CHOOSE THE CORRECT ANSWER</div>
-        <div class="question-text">${q.question}</div>
-        ${q.questionSub?`<div class="question-sub">${q.questionSub}</div>`:''}
-      </div>
-      <div class="battle-options">
-        ${options.map((o,i)=>`<button class="battle-opt" onclick="answerChoice(this,'${escapeAttr(o)}','${escapeAttr(q.answer)}')">${o}</button>`).join('')}
-      </div>
-    `;
-  }
-
-  screen.innerHTML=html;
-}
-
-function escapeAttr(s){return s.replace(/'/g,'&#39;').replace(/"/g,'&quot;')}
-
-function generateOptions(correct,pool,count){
-  const options=new Set([correct]);
-  const available=pool.filter(x=>x!==correct);
-  const shuffled=shuffle([...available]);
-  while(options.size<count && shuffled.length){
-    options.add(shuffled.pop());
-  }
-  return shuffle([...options]);
-}
-
-function answerChoice(btn,selected,correct){
-  if(currentQuiz.answered) return;
-  currentQuiz.answered=true;
-
-  const isCorrect=selected===correct;
-  const allBtns=document.querySelectorAll('.battle-opt');
-
-  btn.classList.add(isCorrect?'correct':'wrong');
-  if(!isCorrect){
-    allBtns.forEach(b=>{
-      if(b.textContent===correct.replace(/&#39;/g,"'")) b.classList.add('correct');
-    });
-  }
-
-  handleAnswer(isCorrect);
-}
-
-function answerTF(answer){
-  if(currentQuiz.answered) return;
-  currentQuiz.answered=true;
-
-  const q=currentQuiz.questions[currentQuiz.current];
-  const isCorrect=answer===q.correct;
-
-  const trueBtn=document.querySelector('.true-btn');
-  const falseBtn=document.querySelector('.false-btn');
-
-  if(answer){
-    trueBtn.classList.add(isCorrect?'correct':'wrong');
-    if(!isCorrect) falseBtn.classList.add('correct');
-  }else{
-    falseBtn.classList.add(isCorrect?'correct':'wrong');
-    if(!isCorrect) trueBtn.classList.add('correct');
-  }
-
-  handleAnswer(isCorrect, q.explanation);
-}
-
-function handleAnswer(isCorrect, explanation){
-  if(isCorrect){
-    currentQuiz.score++;
-    currentQuiz.combo++;
-    if(currentQuiz.combo>currentQuiz.bestCombo) currentQuiz.bestCombo=currentQuiz.combo;
-    state.totalCatches++;
-
-    showPokeballCatch();
-
-    if(currentQuiz.combo===3) showCombo("Nice!","var(--poke-yellow)","18px");
-    else if(currentQuiz.combo===5) showCombo("Great!","var(--fire)","22px");
-    else if(currentQuiz.combo===7) showCombo("Excellent!","var(--poke-red)","26px");
-    else if(currentQuiz.combo>=10) showCombo("MASTER!","var(--poke-yellow)","30px");
-
-    showDialogue(explanation||"Gotcha! ⭐ Caught successfully!");
-  } else {
-    currentQuiz.combo=0;
-    showFlee();
-    showDialogue(explanation||"Oh no, it fled! 💨");
-  }
-
-  setTimeout(()=>{
-    currentQuiz.current++;
-    hideDialogue();
-    renderQuestion();
-  },2000);
-}
-
-function showPokeballCatch(){
-  const el=document.createElement('div');
-  el.className='pokeball-anim catching';
-  el.innerHTML=`<svg class="pokeball-svg" viewBox="0 0 100 100">
-    <circle cx="50" cy="50" r="46" fill="#fff" stroke="#333" stroke-width="4"/>
-    <path d="M4 50 H96" stroke="#333" stroke-width="4"/>
-    <path d="M4 50 A46 46 0 0 0 96 50" fill="#E3350D"/>
-    <circle cx="50" cy="50" r="12" fill="#fff" stroke="#333" stroke-width="4"/>
-    <circle cx="50" cy="50" r="6" fill="#fff" stroke="#333" stroke-width="2"/>
-  </svg>`;
-  document.body.appendChild(el);
-  setTimeout(()=>{el.classList.remove('catching');el.classList.add('caught')},1600);
-  setTimeout(()=>el.remove(),2200);
-}
-
-function showFlee(){
-  const el=document.createElement('div');
-  el.className='pokeball-anim fled';
-  el.innerHTML='<div style="font-size:60px">💨</div>';
-  document.body.appendChild(el);
-  setTimeout(()=>el.remove(),800);
-}
-
-function showCombo(text,color,size){
-  const el=document.createElement('div');
-  el.className='combo-display';
-  el.style.color=color;
-  el.style.fontSize=size;
-  el.textContent=text;
-  document.body.appendChild(el);
-  setTimeout(()=>el.remove(),1000);
-}
-
-function showResults(){
-  const screen=document.getElementById('battle-active');
-  screen.classList.remove('active');
-  const results=document.getElementById('battle-results');
-  results.classList.add('active');
-
-  const s=currentQuiz.score;
-  const total=currentQuiz.questions.length;
-  const type=currentQuiz.type;
-
-  // Update state
-  if(s>state.highScores[type]) state.highScores[type]=s;
-  if(currentQuiz.bestCombo>state.bestCombos[type]) state.bestCombos[type]=currentQuiz.bestCombo;
-  if(currentQuiz.bestCombo>state.bestComboEver) state.bestComboEver=currentQuiz.bestCombo;
-  if(s>=7) state.badges[type]=true;
-  state.totalQuizzes++;
-  saveState();
-
-  let rank,rankClass,emoji;
-  if(s===10){rank="Pokémon Master!";rankClass="master";emoji="🏆"}
-  else if(s>=7){rank="Ace Trainer!";rankClass="ace";emoji="⭐"}
-  else if(s>=4){rank="Pokémon Trainer!";rankClass="trainer";emoji="💪"}
-  else{rank="Youngster — Ganbatte!";rankClass="youngster";emoji="📖"}
-
-  results.innerHTML=`
-    <div class="results-screen">
-      <div class="results-pokeball">${emoji}</div>
-      <div class="results-title">${rank}</div>
-      ${s>=7&&!state.badges[type]?`<div style="font-family:'Press Start 2P',monospace;font-size:9px;color:var(--poke-yellow);margin:8px 0">🏅 NEW BADGE EARNED!</div>`:''}
-      <div class="results-rank ${rankClass}">
-        ${s===10?"You're ready for Japan! 🌸":s>=7?"Almost there, keep it up!":s>=4?"Keep practicing! You got this!":"Study more and try again!"}
-      </div>
-      <div class="results-stats">
-        <div class="stat-row"><span class="stat-label">Caught</span><span class="stat-value">${s} / ${total}</span></div>
-        <div class="stat-row"><span class="stat-label">Catch Rate</span><span class="stat-value">${Math.round(s/total*100)}%</span></div>
-        <div class="stat-row"><span class="stat-label">Best Combo</span><span class="stat-value">x${currentQuiz.bestCombo}</span></div>
-        <div class="stat-row"><span class="stat-label">High Score</span><span class="stat-value">${state.highScores[type]} / ${total}</span></div>
-      </div>
-      <div style="margin-top:16px">
-        <button class="btn-primary" onclick="startBattle('${type}')">RETRY</button>
-        <button class="btn-secondary" onclick="closeBattle()">BACK</button>
-      </div>
-    </div>
-  `;
-}
-
-function closeBattle(){
-  document.getElementById('battle-active').classList.remove('active');
-  document.getElementById('battle-results').classList.remove('active');
-  document.getElementById('battle-menu').style.display='block';
-  currentQuiz=null;
-  renderBattleMenu();
-}
-
-// ===== DIALOGUE BOX =====
-function showDialogue(text){
-  const box=document.getElementById('dialogue-box');
-  const textEl=document.getElementById('dialogue-text');
-  const continueEl=document.getElementById('dialogue-continue');
-
-  box.classList.add('show');
-  continueEl.style.display='none';
-
-  // Typewriter effect
-  let i=0;
-  textEl.innerHTML='';
-  clearInterval(dialogueTimeout);
-  dialogueTimeout=setInterval(()=>{
-    if(i<text.length){
-      textEl.innerHTML+=text.charAt(i);
-      i++;
-    }else{
-      clearInterval(dialogueTimeout);
-      continueEl.style.display='block';
-    }
-  },25);
-}
-function hideDialogue(){
-  document.getElementById('dialogue-box').classList.remove('show');
-  clearInterval(dialogueTimeout);
-}
-
-// ===== TRAINER CARD =====
-function openTrainerCard(){
-  document.getElementById('trainer-modal').classList.add('show');
-  document.getElementById('trainer-name').value=state.trainerName||'';
-  document.getElementById('tc-catches').textContent=state.totalCatches;
-  document.getElementById('tc-badges').textContent=Object.values(state.badges).filter(Boolean).length;
-  document.getElementById('tc-best-combo').textContent=state.bestComboEver;
-  document.getElementById('tc-quizzes').textContent=state.totalQuizzes;
-
-  const badgeRow=document.getElementById('tc-badge-row');
-  badgeRow.innerHTML=[
-    {type:'fire',icon:'🔥',name:'PHRASES'},
-    {type:'water',icon:'💧',name:'KANJI'},
-    {type:'grass',icon:'🌿',name:'ETIQUETTE'},
-    {type:'electric',icon:'⚡',name:'KANSAI'},
-  ].map(b=>`
-    <div class="tc-badge-item">
-      <div class="badge-circle ${state.badges[b.type]?'earned':''}">${b.icon}</div>
-      <div class="badge-name">${b.name}</div>
-    </div>
-  `).join('');
-}
-function closeTrainerCard(){document.getElementById('trainer-modal').classList.remove('show')}
-function saveTrainerName(){state.trainerName=document.getElementById('trainer-name').value;saveState()}
-
-// Click outside modal to close
-document.getElementById('trainer-modal').addEventListener('click',function(e){
-  if(e.target===this) closeTrainerCard();
-});
-
-// ===== UTILS =====
-function shuffle(arr){
-  const a=[...arr];
-  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}
-  return a;
-}
-
-// ===== INIT =====
-renderDex();
-
-// ===== SERVICE WORKER REGISTRATION =====
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('sw.js').catch(()=>{});
-  });
-}
-</script>
+  <app-shell></app-shell>
+  <script type="module" src="app.js"></script>
 </body>
 </html>
