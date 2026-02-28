@@ -9,7 +9,7 @@ import { sprite } from '../lib/sprites.js';
 
 const localSheet = new CSSStyleSheet();
 localSheet.replaceSync(/*css*/`
-  :host { display: block; padding: 20px 28px 80px; animation: fadeIn .3s ease; }
+  :host { display: block; padding: 20px 28px; animation: fadeIn .3s ease; }
 
   .journal-header {
     display: flex; justify-content: space-between; align-items: center;
@@ -77,10 +77,12 @@ localSheet.replaceSync(/*css*/`
   .spot-map-btn {
     font-size: 10px; padding: 4px 8px; border-radius: 6px; border: 1px solid #ddd;
     text-decoration: none; color: var(--poke-dark); background: #fff;
+    min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center;
   }
   .release-btn {
     font-size: 10px; padding: 4px 8px; border-radius: 6px; border: 1px solid #fbb;
     color: var(--poke-red, #E3350D); background: #fff; cursor: pointer;
+    min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center;
   }
 
   /* Empty state */
@@ -148,6 +150,7 @@ class ScreenJournal extends HTMLElement {
       </div>
 
       <div class="type-filters" id="type-filters">
+        <button class="filter-chip filter-all active" id="filter-all" style="border-color:var(--poke-dark);color:#fff;background:var(--poke-dark)">All</button>
         ${Object.entries(SPOT_TYPES).map(([key, t]) =>
           `<button class="filter-chip" data-type="${key}" style="border-color:${t.color};color:${t.color}">${t.icon} ${t.label}</button>`
         ).join('')}
@@ -165,6 +168,24 @@ class ScreenJournal extends HTMLElement {
     this.shadowRoot.getElementById('type-filters').addEventListener('click', (e) => {
       const chip = e.target.closest('.filter-chip');
       if (!chip) return;
+
+      const allChip = this.shadowRoot.getElementById('filter-all');
+
+      // "All" chip — clear all filters
+      if (chip.id === 'filter-all') {
+        this._activeFilters.clear();
+        this.shadowRoot.querySelectorAll('.filter-chip[data-type]').forEach(c => {
+          c.classList.remove('active');
+          c.style.background = '#fff';
+          c.style.color = SPOT_TYPES[c.dataset.type].color;
+        });
+        allChip.classList.add('active');
+        allChip.style.background = 'var(--poke-dark)';
+        allChip.style.color = '#fff';
+        this._renderSpots();
+        return;
+      }
+
       const type = chip.dataset.type;
       if (this._activeFilters.has(type)) {
         this._activeFilters.delete(type);
@@ -177,6 +198,18 @@ class ScreenJournal extends HTMLElement {
         chip.style.background = SPOT_TYPES[type].color;
         chip.style.color = '#fff';
       }
+
+      // Update "All" chip state
+      if (this._activeFilters.size === 0) {
+        allChip.classList.add('active');
+        allChip.style.background = 'var(--poke-dark)';
+        allChip.style.color = '#fff';
+      } else {
+        allChip.classList.remove('active');
+        allChip.style.background = '#fff';
+        allChip.style.color = 'var(--poke-dark)';
+      }
+
       this._renderSpots();
     });
   }
@@ -205,7 +238,9 @@ class ScreenJournal extends HTMLElement {
             <div class="empty-emoji" style="font-size:0">${sprite('scene-empty-journal', 60)}</div>
             <div class="empty-title">No spots caught yet!</div>
             <div class="empty-text">Tap the Pokéball to catch<br>your first spot!</div>
+            <button class="btn-primary" id="empty-catch-btn" style="margin-top:16px">CATCH YOUR FIRST SPOT!</button>
           </div>`;
+        list.querySelector('#empty-catch-btn')?.addEventListener('click', () => bus.emit('start-catch'));
       } else {
         list.innerHTML = `<div class="empty-state"><div class="empty-title">No matches</div></div>`;
       }

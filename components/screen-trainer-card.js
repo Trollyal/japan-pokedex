@@ -35,7 +35,7 @@ localSheet.replaceSync(/*css*/`
 
   .tc-close {
     position: sticky; top: 0; float: right; background: #fff; border: 1px solid #eee;
-    border-radius: 50%; width: 36px; height: 36px;
+    border-radius: 50%; width: 44px; height: 44px;
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; z-index: 10; color: #aaa; margin: -8px -8px 0 0;
   }

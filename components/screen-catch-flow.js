@@ -96,7 +96,7 @@ localSheet.replaceSync(/*css*/`
   .type-btn {
     padding: 8px 12px; border-radius: 10px; border: 2px solid #ddd;
     font-size: 12px; cursor: pointer; transition: all .15s;
-    background: #fff; font-weight: 600;
+    background: #fff; font-weight: 600; min-height: 44px;
   }
   .type-btn.selected { border-width: 3px; color: #fff; }
 
@@ -150,16 +150,23 @@ localSheet.replaceSync(/*css*/`
   .throw-ball.spring-back { transition: transform .3s cubic-bezier(.34,1.56,.64,1); }
   .throw-hint {
     font-family: 'Press Start 2P', monospace; font-size: 9px; color: #888;
-    text-align: center; margin: 8px 0; animation: hintBob 1.5s ease-in-out infinite;
+    text-align: center; margin: 8px 0;
   }
-  @keyframes hintBob {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-4px); }
+  .swipe-arrow {
+    display: block; margin: 0 auto 4px; width: 0; height: 0;
+    border-left: 10px solid transparent; border-right: 10px solid transparent;
+    border-bottom: 14px solid #888;
+    animation: arrowBounce 1.2s ease-in-out infinite;
   }
-  .throw-fallback { margin-top: 12px; font-size: 14px; opacity: 1; }
+  @keyframes arrowBounce {
+    0%, 100% { transform: translateY(0); opacity: .6; }
+    50% { transform: translateY(-10px); opacity: 1; }
+  }
+  .throw-fallback { margin-top: 12px; font-size: 14px; opacity: 0; pointer-events: none; transition: opacity .3s; }
+  .throw-fallback.visible { opacity: 1; pointer-events: auto; }
 
   @media (prefers-reduced-motion: reduce) {
-    .beat, .encounter-flash, .shake-anim, .gotcha-text, .throw-hint {
+    .beat, .encounter-flash, .shake-anim, .gotcha-text, .throw-hint, .swipe-arrow {
       animation: none !important;
       transition: none !important;
     }
@@ -204,7 +211,7 @@ class ScreenCatchFlow extends HTMLElement {
 
           <!-- Beat 2: Throw (swipe gesture + click fallback) -->
           <div class="beat" data-beat="2" id="beat2">
-            <div class="throw-hint">Swipe up to throw!</div>
+            <div class="throw-hint"><span class="swipe-arrow"></span>Swipe up to throw!</div>
             <div class="throw-zone" id="throw-zone">
               <div class="throw-ball" id="throw-ball">${sprite('pokeball', 80)}</div>
             </div>
@@ -356,6 +363,10 @@ class ScreenCatchFlow extends HTMLElement {
     overlay.classList.add('show');
     sfx('catch-encounter');
 
+    // Reset fallback button visibility
+    const fallbackBtn = this.shadowRoot.getElementById('throw-btn');
+    if (fallbackBtn) fallbackBtn.classList.remove('visible');
+
     // Show Beat 1
     this._showBeat(1);
     const gpsStatus = this.shadowRoot.getElementById('gps-status');
@@ -410,7 +421,7 @@ class ScreenCatchFlow extends HTMLElement {
       const deltaY = startY - point.clientY; // positive = up
       const duration = Date.now() - startTime;
 
-      if (deltaY > 80 && duration < 300) {
+      if (deltaY > 60 && duration < 500) {
         // Successful swipe — throw!
         this._throwFired = true;
         ball.style.transform = `translateY(-200px)`;
@@ -640,6 +651,15 @@ class ScreenCatchFlow extends HTMLElement {
     this.shadowRoot.querySelectorAll('.beat').forEach(b => b.classList.remove('active'));
     const beat = this.shadowRoot.querySelector(`[data-beat="${n}"]`);
     if (beat) beat.classList.add('active');
+
+    // Show fallback throw button after 3s delay on beat 2
+    if (n === 2) {
+      clearTimeout(this._fallbackTimer);
+      this._fallbackTimer = setTimeout(() => {
+        const btn = this.shadowRoot.getElementById('throw-btn');
+        if (btn) btn.classList.add('visible');
+      }, 3000);
+    }
   }
 
   _close() {

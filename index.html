@@ -57,6 +57,8 @@
       radial-gradient(circle at 80% 80%, rgba(141,181,128,.15) 0%, transparent 50%);
   }
 
+  app-shell { display: block; max-width: 430px; margin: 0 auto; position: relative; }
+
   .pixel { font-family: 'Press Start 2P', monospace; }
 
   /* Pokeball background pattern */
@@ -99,7 +101,8 @@
 
   /* ===== BOTTOM NAV ===== */
   .bottom-nav {
-    position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); z-index: 100;
+    width: 100%; max-width: 430px;
     background: #fff; border-top: 3px solid var(--poke-dark);
     display: flex; height: calc(72px + env(safe-area-inset-bottom));
     padding-bottom: env(safe-area-inset-bottom);
@@ -124,7 +127,7 @@
   .pokeball-fab {
     position: fixed;
     bottom: calc(92px + env(safe-area-inset-bottom));
-    right: 16px;
+    right: max(16px, calc(50% - 199px));
     z-index: 99;
     background: none; border: none; cursor: pointer;
     animation: fabPulse 2s 3;
@@ -141,7 +144,7 @@
   app-shell.onboarding-active bulbasaur-buddy { display: none !important; }
 
   /* Screen container clearance for FAB */
-  #screen-container { padding-bottom: 80px; scroll-padding-bottom: 80px; }
+  #screen-container { scroll-padding-bottom: 80px; }
   @keyframes fabPulse {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.05); }
@@ -153,7 +156,7 @@
   .situation-menu {
     position: fixed;
     bottom: calc(160px + env(safe-area-inset-bottom));
-    right: 16px;
+    right: max(16px, calc(50% - 199px));
     z-index: 99;
     display: flex; flex-direction: column; gap: 8px;
     align-items: flex-end;
@@ -187,7 +190,8 @@
 
   /* ===== DIALOGUE BOX ===== */
   .dialogue-box {
-    position: fixed; bottom: calc(80px + env(safe-area-inset-bottom)); left: 12px; right: 12px;
+    position: fixed; bottom: calc(80px + env(safe-area-inset-bottom));
+    left: 50%; transform: translateX(-50%); width: calc(100% - 24px); max-width: 406px;
     z-index: 150;
     background: #fff; border: 3px solid var(--poke-dark); border-radius: 12px;
     padding: 16px 18px; min-height: 60px;
@@ -195,7 +199,7 @@
     display: none;
   }
   .dialogue-box.show { display: block; animation: dialogueIn .2s ease; }
-  @keyframes dialogueIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes dialogueIn { from { opacity: 0; transform: translateX(-50%) translateY(10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
   .dialogue-text { font-size: 14px; line-height: 1.5; font-weight: 600; }
   .dialogue-continue {
     font-family: 'Press Start 2P', monospace; font-size: 9px; color: var(--poke-red);
@@ -225,7 +229,7 @@
   .install-banner {
     position: fixed;
     top: calc(70px + env(safe-area-inset-top));
-    left: 12px; right: 12px;
+    left: 50%; transform: translateX(-50%); width: calc(100% - 24px); max-width: 406px;
     z-index: 200;
     background: var(--poke-dark); color: #fff;
     padding: 12px 16px; border-radius: 12px;
@@ -243,7 +247,7 @@
   .fab-coachmark {
     position: fixed;
     bottom: calc(160px + env(safe-area-inset-bottom));
-    right: 16px;
+    right: max(16px, calc(50% - 199px));
     z-index: 99;
     background: var(--poke-dark, #2C2C54);
     color: #fff;

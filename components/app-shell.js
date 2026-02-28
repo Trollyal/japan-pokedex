@@ -193,7 +193,7 @@ ${sprite('nav-journal', 28)}
       `<button class="situation-btn" role="menuitem" data-filter="${s.filter}" style="animation-delay:${i * 0.05}s">
         <span aria-hidden="true">${s.icon}</span> <span>${s.label}</span>
       </button>`
-    ).join('');
+    ).join('') + `<button class="situation-btn situation-cancel" role="menuitem" style="animation-delay:${situations.length * 0.05}s;opacity:.7">Cancel</button>`;
 
     this.appendChild(menu);
 
@@ -204,6 +204,10 @@ ${sprite('nav-journal', 28)}
     menu.querySelectorAll('.situation-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         sfx('ui-tap');
+        if (btn.classList.contains('situation-cancel')) {
+          this._hideSituationMenu();
+          return;
+        }
         this._hideSituationMenu();
         navigate('pokedex', { filter: btn.dataset.filter });
       });
@@ -239,11 +243,13 @@ ${sprite('nav-journal', 28)}
 
   _maybeShowFabHint() {
     const state = getState();
-    if (!state || !state.onboardingComplete || state.hasSeenFabHint) return;
+    if (!state || !state.onboardingComplete) return;
+    const count = state.fabHintCount || 0;
+    if (count >= 3) return;
 
     this._fabHintTimer = setTimeout(() => {
       const state = getState();
-      if (state.hasSeenFabHint) return;
+      if ((state.fabHintCount || 0) >= 3) return;
 
       const hint = document.createElement('div');
       hint.className = 'fab-coachmark';
@@ -254,7 +260,7 @@ ${sprite('nav-journal', 28)}
       const dismiss = () => {
         const el = this.querySelector('#fab-coachmark');
         if (el) el.remove();
-        state.hasSeenFabHint = true;
+        state.fabHintCount = (state.fabHintCount || 0) + 1;
         clearTimeout(autoDismiss);
       };
 

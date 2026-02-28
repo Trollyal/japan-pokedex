@@ -277,8 +277,10 @@ class ScreenBattle extends HTMLElement {
 
     this._quiz.answered = false;
 
+    const typeLabel = this._quiz.cat.name.toUpperCase();
     let html = `
       <div class="progress-info">
+        <span>WILD ${typeLabel} HP</span>
         <span>${this._quiz.current + 1} / ${this._quiz.questions.length}</span>
         <span>Score: ${this._quiz.score}</span>
         <button class="flee-btn" id="flee-btn">RUN</button>
@@ -383,6 +385,7 @@ class ScreenBattle extends HTMLElement {
   _handleAnswer(isCorrect, explanation) {
     const state = getState();
 
+    let delay;
     if (isCorrect) {
       sfx('battle-correct');
       bus.emit('battle-correct');
@@ -398,20 +401,22 @@ class ScreenBattle extends HTMLElement {
       else if (this._quiz.combo === 7) { sfx('battle-combo-excellent'); this._showCombo('Excellent!', 'var(--poke-red)', '26px'); }
       else if (this._quiz.combo >= 10) { sfx('battle-combo-master'); this._showCombo('MASTER!', 'var(--poke-yellow)', '30px'); }
 
-      bus.emit('show-dialogue', { text: explanation || 'Gotcha! ⭐ Caught successfully!', autoHide: 3000 });
+      bus.emit('show-dialogue', { text: explanation || 'Gotcha! ⭐ Caught successfully!', autoHide: 2000 });
+      delay = 2000;
     } else {
       sfx('battle-wrong');
       bus.emit('battle-wrong');
       this._quiz.combo = 0;
       this._showFlee();
-      bus.emit('show-dialogue', { text: explanation || 'Oh no, it fled!', autoHide: 3000 });
+      bus.emit('show-dialogue', { text: explanation || 'Oh no, it fled!', autoHide: 2500 });
+      delay = 2500;
     }
 
     setTimeout(() => {
       this._quiz.current++;
       bus.emit('hide-dialogue');
       this._renderQuestion();
-    }, 3500);
+    }, delay);
   }
 
   _showPokeballCatch() {
