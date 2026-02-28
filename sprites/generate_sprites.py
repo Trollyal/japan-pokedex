@@ -190,6 +190,51 @@ def draw_mini_bulbasaur(draw: ImageDraw.ImageDraw, x: int, y: int):
 # ---------------------------------------------------------------------------
 # Character sprites (Phase 2)
 # ---------------------------------------------------------------------------
+def _find_eyes(img: Image.Image):
+    """Find eye pixel coordinates by scanning for red/white clusters in top half."""
+    eyes = []
+    w, h = img.size
+    for y in range(h // 3, h * 2 // 3):
+        for x in range(w // 2):
+            r, g, b, a = img.getpixel((x, y))
+            # Look for white shine pixels (eye highlights) next to red pixels
+            if r > 200 and g > 200 and b > 200 and a > 200:
+                # Check if red pixel is nearby (below or adjacent)
+                for dy in range(0, 3):
+                    for dx in range(-1, 2):
+                        nx, ny = x + dx, y + dy
+                        if 0 <= nx < w and 0 <= ny < h:
+                            nr, ng, nb, na = img.getpixel((nx, ny))
+                            if nr > 150 and ng < 80 and nb < 80 and na > 200:
+                                eyes.append((x, y))
+    # Deduplicate to 2 clusters
+    if len(eyes) >= 2:
+        left = eyes[0]
+        right = None
+        for e in eyes[1:]:
+            if abs(e[0] - left[0]) > 3:
+                right = e
+                break
+        if right:
+            return left, right
+    return None
+
+
+def _tint_image(img: Image.Image, tint_color, strength=0.3):
+    """Apply a color tint to non-transparent pixels."""
+    result = img.copy()
+    w, h = result.size
+    for y in range(h):
+        for x in range(w):
+            r, g, b, a = result.getpixel((x, y))
+            if a > 50:
+                r = int(r * (1 - strength) + tint_color[0] * strength)
+                g = int(g * (1 - strength) + tint_color[1] * strength)
+                b = int(b * (1 - strength) + tint_color[2] * strength)
+                result.putpixel((x, y), (min(255, r), min(255, g), min(255, b), a))
+    return result
+
+
 def generate_bulbasaur_variants():
     """Download Bulbasaur from PokeAPI and create 5 mood variants."""
     print("\n[Bulbasaur variants]")
@@ -204,77 +249,137 @@ def generate_bulbasaur_variants():
         src = crop_to_content(src)
         base = src.resize((32, 32), Image.NEAREST)
     else:
-        # Fallback: draw Bulbasaur from scratch
         base = _draw_bulbasaur_scratch()
 
-    # 1. Happy (base)
+    # Detect eye positions for accurate overlays
+    eye_info = _find_eyes(base)
+    if eye_info:
+        left_eye, right_eye = eye_info
+        print(f"  Eyes detected at {left_eye} and {right_eye}")
+    else:
+        # Fallback coordinates from pixel analysis
+        left_eye, right_eye = (2, 15), (11, 15)
+        print(f"  Using fallback eye positions {left_eye} and {right_eye}")
+
+    # The bulb sits roughly in top-right quadrant (x: 20-28, y: 0-8)
+    bulb_cx, bulb_cy = 24, 5
+
+    # 1. Happy (base — unmodified)
     save_webp(base, "bulbasaur-happy")
 
-    # 2. Sleepy: close eyes, add Z's
-    sleepy = base.copy()
+    # 2. Sleepy: blue tint + closed eyes (horizontal bars) + floating Z's
+    sleepy = _tint_image(base, (80, 80, 180), 0.2)
     d = ImageDraw.Draw(sleepy)
-    # Find approximate eye area and draw horizontal lines (closed eyes)
-    # Eyes are roughly in upper-middle area of the sprite
-    for dx in range(-2, 3):
-        d.point((12 + dx, 16), fill=PALETTE["black"])
-        d.point((20 + dx, 16), fill=PALETTE["black"])
-    # "Z" above head
-    tiny_text(d, 24, 2, "Z", PALETTE["blue"])
-    tiny_text(d, 22, 6, "Z", (100, 140, 220))
+    # Close eyes: 3px horizontal bars over each eye
+    for eye_x, eye_y in [left_eye, right_eye]:
+        for dx in range(-1, 3):
+            for dy in range(0, 2):
+                px, py = eye_x + dx, eye_y + dy + 1
+                if 0 <= px < 32 and 0 <= py < 32:
+                    d.point((px, py), fill=PALETTE["black"])
+    # Floating "Z z Z" — large and visible in top-right corner
+    # Big Z
+    tiny_text(d, 26, 0, "Z", PALETTE["blue"])
+    # Medium Z offset
+    tiny_text(d, 22, 4, "Z", (100, 140, 255))
+    # Small Z
+    d.point((20, 8), fill=(140, 170, 255))
+    d.point((21, 7), fill=(140, 170, 255))
+    d.point((19, 7), fill=(140, 170, 255))
     save_webp(sleepy, "bulbasaur-sleepy")
 
-    # 3. Excited: sparkle / "!" above head
-    excited = base.copy()
+    # 3. Excited: bright tint + sparkles + "!" + bouncy motion lines below
+    excited = _tint_image(base, (255, 255, 200), 0.1)
     d = ImageDraw.Draw(excited)
-    # Open mouth - small red/pink mark
-    d.point((16, 22), fill=PALETTE["pink"])
-    d.point((17, 22), fill=PALETTE["pink"])
-    # "!" and sparkle above
-    tiny_text(d, 15, 0, "!", PALETTE["yellow"])
-    draw_sparkle(d, 26, 4, PALETTE["yellow"])
+    # Bold "!" above head
+    tiny_text(d, 13, 0, "!", PALETTE["yellow"])
+    # Larger "!" to the right
+    for y in range(0, 5):
+        d.point((17, y), fill=PALETTE["yellow"])
+        d.point((18, y), fill=PALETTE["yellow"])
+    d.point((17, 7), fill=PALETTE["yellow"])
+    d.point((18, 7), fill=PALETTE["yellow"])
+    # Sparkles in corners
+    draw_sparkle(d, 28, 2, PALETTE["yellow"])
+    draw_sparkle(d, 4, 2, (255, 200, 50))
+    # Bounce lines below feet
+    for x in [8, 12, 16, 20]:
+        d.point((x, 30), fill=PALETTE["yellow"])
+        d.point((x, 31), fill=(255, 220, 50, 150))
     save_webp(excited, "bulbasaur-excited")
 
-    # 4. Confused: spiral eyes, "?" above
-    confused = base.copy()
+    # 4. Confused: purple tint + X eyes + "?" + swirl above head
+    confused = _tint_image(base, (180, 100, 220), 0.15)
     d = ImageDraw.Draw(confused)
-    # Spiral/X eyes
-    for dx, dy in [(-1, -1), (1, 1), (-1, 1), (1, -1)]:
-        d.point((12 + dx, 16 + dy), fill=PALETTE["black"])
-        d.point((20 + dx, 16 + dy), fill=PALETTE["black"])
-    # "?" above head
-    tiny_text(d, 14, 0, "?", PALETTE["yellow"])
+    # X over each eye (3x3 X pattern)
+    for eye_x, eye_y in [left_eye, right_eye]:
+        center_x, center_y = eye_x + 1, eye_y + 1
+        for delta in range(-1, 2):
+            px1, py1 = center_x + delta, center_y + delta
+            px2, py2 = center_x + delta, center_y - delta
+            for px, py in [(px1, py1), (px2, py2)]:
+                if 0 <= px < 32 and 0 <= py < 32:
+                    d.point((px, py), fill=PALETTE["purple"])
+    # Big "?" above head
+    tiny_text(d, 12, 0, "?", PALETTE["yellow"])
+    # Larger "?" to the right
+    for px, py in [(17, 0), (18, 0), (19, 0), (19, 1), (18, 2), (17, 2), (18, 4)]:
+        d.point((px, py), fill=PALETTE["yellow"])
+    # Swirl marks
+    swirl = [(27, 3), (28, 2), (29, 3), (28, 4), (27, 5), (29, 5), (30, 4)]
+    for sx, sy in swirl:
+        if 0 <= sx < 32 and 0 <= sy < 32:
+            d.point((sx, sy), fill=PALETTE["purple"])
     save_webp(confused, "bulbasaur-confused")
 
-    # 5. Vine Whip: draw vines extending from bulb area
+    # 5. Vine Whip: thick green vines from bulb area curving outward
     vinewhip = base.copy()
     d = ImageDraw.Draw(vinewhip)
-    vine_color = PALETTE["green"]
-    vine_dark = PALETTE["dark_green"]
-    # Left vine
-    for i in range(8):
-        vx = 6 - i
-        vy = 8 + i
-        if 0 <= vx < 32 and 0 <= vy < 32:
-            d.point((vx, vy), fill=vine_color)
-            if vx + 1 < 32:
-                d.point((vx + 1, vy), fill=vine_dark)
-    # Right vine
-    for i in range(8):
-        vx = 26 + i
-        vy = 8 + i
-        if 0 <= vx < 32 and 0 <= vy < 32:
-            d.point((vx, vy), fill=vine_color)
-            if vx - 1 >= 0:
-                d.point((vx - 1, vy), fill=vine_dark)
-    # Vine tips (small leaf shapes)
-    for dx, dy in [(-1, 0), (0, -1), (-2, -1)]:
-        px, py = 6 - 7 + dx, 8 + 7 + dy
+    vine = (40, 200, 80)
+    vine_dk = (20, 150, 50)
+    vine_lt = (80, 230, 100)
+    # Left vine — curves from bulb down-left (2px wide)
+    left_vine_path = []
+    for i in range(10):
+        vx = bulb_cx - 4 - i * 2
+        vy = bulb_cy + i
+        left_vine_path.append((vx, vy))
+    for vx, vy in left_vine_path:
+        for dx in range(2):
+            px, py = vx + dx, vy
+            if 0 <= px < 32 and 0 <= py < 32:
+                d.point((px, py), fill=vine)
+        # Dark edge below
+        if 0 <= vx < 32 and 0 <= vy + 1 < 32:
+            d.point((vx, vy + 1), fill=vine_dk)
+    # Left vine tip (leaf)
+    tip = left_vine_path[-1] if left_vine_path else (0, 14)
+    tx, ty = tip
+    for dx, dy in [(-2, -1), (-1, -1), (-3, 0), (-2, 0), (-1, 0), (-2, 1)]:
+        px, py = tx + dx, ty + dy
         if 0 <= px < 32 and 0 <= py < 32:
-            d.point((px, py), fill=vine_color)
-    for dx, dy in [(1, 0), (0, -1), (2, -1)]:
-        px, py = 26 + 7 + dx, 8 + 7 + dy
+            d.point((px, py), fill=vine_lt)
+
+    # Right vine — curves from bulb up-right
+    right_vine_path = []
+    for i in range(8):
+        vx = bulb_cx + 2 + i
+        vy = bulb_cy - 2 + i
+        right_vine_path.append((vx, vy))
+    for vx, vy in right_vine_path:
+        for dx in range(2):
+            px, py = vx + dx, vy
+            if 0 <= px < 32 and 0 <= py < 32:
+                d.point((px, py), fill=vine)
+        if 0 <= vx + 1 < 32 and 0 <= vy + 1 < 32:
+            d.point((vx + 1, vy + 1), fill=vine_dk)
+    # Right vine tip
+    tip = right_vine_path[-1] if right_vine_path else (31, 12)
+    tx, ty = tip
+    for dx, dy in [(1, -2), (2, -1), (2, 0), (1, 0), (2, 1), (1, 1)]:
+        px, py = tx + dx, ty + dy
         if 0 <= px < 32 and 0 <= py < 32:
-            d.point((px, py), fill=vine_color)
+            d.point((px, py), fill=vine_lt)
     save_webp(vinewhip, "bulbasaur-vinewhip")
 
 
@@ -337,16 +442,24 @@ def _draw_bulbasaur_scratch() -> Image.Image:
 
 
 def generate_oak():
-    """Download Professor Oak from Pokemon Showdown and resize."""
+    """Download Professor Oak gen3 from Pokemon Showdown and resize."""
     print("\n[Professor Oak]")
-    url = "https://play.pokemonshowdown.com/sprites/trainers/oak-gen1rb.png"
+    # Gen3 Emerald sprite — much more detailed than gen1rb
+    url = "https://play.pokemonshowdown.com/sprites/trainers/oak-gen3.png"
     try:
         src = download_png(url)
         src = crop_to_content(src)
         oak = src.resize((32, 32), Image.NEAREST)
     except Exception as e:
-        print(f"  Download failed ({e}), creating from scratch")
-        oak = _draw_oak_scratch()
+        print(f"  Gen3 download failed ({e}), trying gen1rb fallback...")
+        try:
+            url2 = "https://play.pokemonshowdown.com/sprites/trainers/oak-gen1rb.png"
+            src = download_png(url2)
+            src = crop_to_content(src)
+            oak = src.resize((32, 32), Image.NEAREST)
+        except Exception as e2:
+            print(f"  All downloads failed ({e2}), creating from scratch")
+            oak = _draw_oak_scratch()
     save_webp(oak, "oak")
 
 
