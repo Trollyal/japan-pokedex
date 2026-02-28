@@ -238,6 +238,46 @@
     background: none; border: none; color: #fff; font-size: 18px; cursor: pointer;
     padding: 0 4px;
   }
+
+  /* FAB coachmark tooltip */
+  .fab-coachmark {
+    position: fixed;
+    bottom: calc(160px + env(safe-area-inset-bottom));
+    right: 16px;
+    z-index: 99;
+    background: var(--poke-dark, #2C2C54);
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(0,0,0,.25);
+    animation: fadeInUp .3s ease;
+    white-space: nowrap;
+  }
+  .fab-coachmark::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    right: 20px;
+    width: 0; height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid var(--poke-dark, #2C2C54);
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pokeball-fab, .ball-upgrading, .situation-btn, .dialogue-box.show,
+    .install-banner, .fab-coachmark {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
 }
 
 @layer utilities {

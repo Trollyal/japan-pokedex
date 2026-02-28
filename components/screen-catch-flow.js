@@ -10,6 +10,7 @@ import { sprite } from '../lib/sprites.js';
 import { sfx } from '../lib/audio.js';
 import { checkAchievements } from '../data/badges.js';
 import { checkLocationEasterEggs } from '../data/locations.js';
+import { localDateStr } from '../lib/date-utils.js';
 
 const localSheet = new CSSStyleSheet();
 localSheet.replaceSync(/*css*/`
@@ -155,7 +156,14 @@ localSheet.replaceSync(/*css*/`
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-4px); }
   }
-  .throw-fallback { margin-top: 12px; font-size: 11px; opacity: .6; }
+  .throw-fallback { margin-top: 12px; font-size: 14px; opacity: 1; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .beat, .encounter-flash, .shake-anim, .gotcha-text, .throw-hint {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
 `);
 
 const BULBA_REACTIONS = {
@@ -558,14 +566,14 @@ class ScreenCatchFlow extends HTMLElement {
     }
 
     // Catch streak
-    const today = now.toISOString().slice(0, 10);
+    const today = localDateStr(now);
     const streak = state.catchStreak || { count: 0, lastDate: null };
     if (streak.lastDate === today) {
       // same day, no change
     } else {
       const yesterday = new Date(now);
       yesterday.setDate(yesterday.getDate() - 1);
-      const yesterdayStr = yesterday.toISOString().slice(0, 10);
+      const yesterdayStr = localDateStr(yesterday);
       if (streak.lastDate === yesterdayStr) {
         streak.count++;
       } else {

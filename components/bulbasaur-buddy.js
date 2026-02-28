@@ -66,6 +66,13 @@ localSheet.replaceSync(/*css*/`
     50% { transform: translateX(6px); }
     75% { transform: translateX(-3px); }
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    :host * {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
 `);
 
 class BulbasaurBuddy extends HTMLElement {

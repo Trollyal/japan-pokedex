@@ -26,7 +26,7 @@ class AppShell extends HTMLElement {
       <main id="screen-container"></main>
 
       <!-- POKEBALL FAB -->
-      <button class="pokeball-fab" id="pokeball-fab" aria-label="Catch a Spot">
+      <button class="pokeball-fab" id="pokeball-fab" aria-label="Catch a Spot" aria-haspopup="true" aria-expanded="false">
 ${sprite('pokeball', 56)}
       </button>
 
@@ -73,6 +73,9 @@ ${sprite('nav-journal', 28)}
 
     // Watch state changes to detect ball upgrades
     onStateChange('*', () => this._updateFABBall());
+
+    // Maybe show long-press coachmark
+    this._maybeShowFabHint();
   }
 
   _updateFABBall() {
@@ -142,10 +145,12 @@ ${sprite('nav-journal', 28)}
 
     fab.addEventListener('pointerleave', () => {
       clearTimeout(fabTimer);
+      fabFired = false;
     });
 
     fab.addEventListener('pointercancel', () => {
       clearTimeout(fabTimer);
+      fabFired = false;
     });
 
     // Dialogue box tap to dismiss
@@ -182,13 +187,18 @@ ${sprite('nav-journal', 28)}
     const menu = document.createElement('div');
     menu.className = 'situation-menu show';
     menu.id = 'situation-menu';
+    menu.setAttribute('role', 'menu');
+    menu.setAttribute('aria-label', 'Quick phrases');
     menu.innerHTML = situations.map((s, i) =>
-      `<button class="situation-btn" data-filter="${s.filter}" style="animation-delay:${i * 0.05}s">
-        ${s.icon} <span>${s.label}</span>
+      `<button class="situation-btn" role="menuitem" data-filter="${s.filter}" style="animation-delay:${i * 0.05}s">
+        <span aria-hidden="true">${s.icon}</span> <span>${s.label}</span>
       </button>`
     ).join('');
 
     this.appendChild(menu);
+
+    const fab = this.querySelector('#pokeball-fab');
+    if (fab) fab.setAttribute('aria-expanded', 'true');
 
     // Bind button clicks
     menu.querySelectorAll('.situation-btn').forEach(btn => {
@@ -219,10 +229,38 @@ ${sprite('nav-journal', 28)}
   _hideSituationMenu() {
     const menu = this.querySelector('#situation-menu');
     if (menu) menu.remove();
+    const fab = this.querySelector('#pokeball-fab');
+    if (fab) fab.setAttribute('aria-expanded', 'false');
     if (this._menuDismissCleanup) {
       this._menuDismissCleanup();
       this._menuDismissCleanup = null;
     }
+  }
+
+  _maybeShowFabHint() {
+    const state = getState();
+    if (!state || !state.onboardingComplete || state.hasSeenFabHint) return;
+
+    this._fabHintTimer = setTimeout(() => {
+      const state = getState();
+      if (state.hasSeenFabHint) return;
+
+      const hint = document.createElement('div');
+      hint.className = 'fab-coachmark';
+      hint.id = 'fab-coachmark';
+      hint.textContent = 'Hold for quick phrases';
+      this.appendChild(hint);
+
+      const dismiss = () => {
+        const el = this.querySelector('#fab-coachmark');
+        if (el) el.remove();
+        state.hasSeenFabHint = true;
+        clearTimeout(autoDismiss);
+      };
+
+      hint.addEventListener('click', dismiss);
+      const autoDismiss = setTimeout(dismiss, 5000);
+    }, 6000);
   }
 
   showDialogue(text, autoHide = 0) {
