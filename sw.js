@@ -18,6 +18,7 @@ const PRECACHE_URLS = [
   './lib/sprites.js',
   './lib/audio.js',
   './lib/progression.js',
+  './lib/date-utils.js',
   './components/app-shell.js',
   './components/screen-onboarding.js',
   './components/screen-pokedex.js',

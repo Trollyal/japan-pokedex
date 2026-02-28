@@ -30,7 +30,7 @@ export const ACHIEVEMENT_BADGES = [
   { key: 'streak3', icon: sprite('badge-streak-3', 20), label: 'Streak 3', desc: '3-day catch streak' },
   { key: 'streak5', icon: sprite('badge-streak-5', 20), label: 'Streak 5', desc: '5-day catch streak' },
   { key: 'streak7', icon: sprite('badge-streak-7', 20), label: 'Streak 7', desc: '7-day catch streak' },
-  { key: 'distanceWalker', icon: sprite('badge-distance-walker', 20), label: 'Walker', desc: 'Walk 2+ km between spots' },
+  { key: 'distanceWalker', icon: sprite('badge-distance-walker', 20), label: 'Walker', desc: 'Walk 2+ km total' },
   { key: 'distanceRunner', icon: sprite('badge-distance-runner', 20), label: 'Runner', desc: 'Walk 10+ km total' },
   { key: 'factHunter', icon: sprite('badge-fact-hunter', 20), label: 'Fact Hunter', desc: 'Collect 10 wild facts' },
   { key: 'diverseExplorer', icon: sprite('badge-diverse-explorer', 20), label: 'Diverse Explorer', desc: 'Catch 3+ of 4 different types' },

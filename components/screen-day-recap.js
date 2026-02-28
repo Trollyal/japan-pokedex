@@ -6,6 +6,7 @@ import { bus } from '../lib/events.js';
 import { SPOT_TYPES } from '../lib/pokemon-types.js';
 import { getBlob } from '../lib/storage.js';
 import { sprite } from '../lib/sprites.js';
+import { localDateStr } from '../lib/date-utils.js';
 
 const localSheet = new CSSStyleSheet();
 localSheet.replaceSync(/*css*/`
@@ -71,6 +72,13 @@ localSheet.replaceSync(/*css*/`
     margin: 16px 0; padding: 12px;
     background: var(--grass-bg, #E8F5E9); border-radius: 12px;
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .recap-card {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
 `);
 
 class ScreenDayRecap extends HTMLElement {
@@ -93,9 +101,9 @@ class ScreenDayRecap extends HTMLElement {
     const hour = now.getHours();
     if (hour < 20) return; // only show after 8 PM
 
-    const today = now.toISOString().slice(0, 10);
+    const today = localDateStr(now);
     const todayCatches = (state.caughtSpots || []).filter(s =>
-      s.timestamp && s.timestamp.startsWith(today)
+      s.timestamp && localDateStr(new Date(s.timestamp)) === today
     );
 
     if (todayCatches.length === 0) return;

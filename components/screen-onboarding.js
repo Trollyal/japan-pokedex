@@ -85,6 +85,13 @@ localSheet.replaceSync(/*css*/`
     font-size: 14px; color: var(--grass, #5DAA68); font-weight: 700;
     margin: 12px 0; min-height: 20px;
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .step, .starter-card.selected {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
 `);
 
 class ScreenOnboarding extends HTMLElement {
