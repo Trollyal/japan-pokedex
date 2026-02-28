@@ -137,13 +137,52 @@
   /* Hide chrome during onboarding */
   app-shell.onboarding-active .header,
   app-shell.onboarding-active .bottom-nav,
-  app-shell.onboarding-active .pokeball-fab { display: none !important; }
+  app-shell.onboarding-active .pokeball-fab,
+  app-shell.onboarding-active bulbasaur-buddy { display: none !important; }
 
   /* Screen container clearance for FAB */
   #screen-container { padding-bottom: 80px; scroll-padding-bottom: 80px; }
   @keyframes fabPulse {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.05); }
+  }
+  .pokeball-fab.ball-upgrading {
+    animation: ballUpgrade .8s ease;
+  }
+  /* Situation menu (above FAB) */
+  .situation-menu {
+    position: fixed;
+    bottom: calc(160px + env(safe-area-inset-bottom));
+    right: 16px;
+    z-index: 99;
+    display: flex; flex-direction: column; gap: 8px;
+    align-items: flex-end;
+  }
+  .situation-btn {
+    display: flex; align-items: center; gap: 8px;
+    background: #fff; border: 2px solid var(--poke-dark);
+    border-radius: 12px; padding: 10px 16px;
+    font-family: 'Quicksand', sans-serif; font-size: 13px; font-weight: 700;
+    color: var(--poke-dark); cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    animation: situationFanIn .25s ease backwards;
+    transition: transform .1s;
+  }
+  .situation-btn:active { transform: scale(.95); }
+  .situation-btn img { image-rendering: pixelated; }
+  @keyframes situationFanIn {
+    from { opacity: 0; transform: translateY(20px) scale(.8); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* Hide situation menu during onboarding */
+  app-shell.onboarding-active .situation-menu { display: none !important; }
+
+  @keyframes ballUpgrade {
+    0% { transform: scale(1); filter: drop-shadow(0 4px 8px rgba(0,0,0,.3)); }
+    30% { transform: scale(1.3); filter: drop-shadow(0 0 20px rgba(255,203,5,.8)); }
+    60% { transform: scale(1.1); filter: drop-shadow(0 0 12px rgba(255,203,5,.5)); }
+    100% { transform: scale(1); filter: drop-shadow(0 4px 8px rgba(0,0,0,.3)); }
   }
 
   /* ===== DIALOGUE BOX ===== */

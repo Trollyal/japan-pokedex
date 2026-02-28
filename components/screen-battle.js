@@ -7,6 +7,7 @@ import { shuffle, buildPhraseQuestions, buildKanjiQuestions, buildEtiquetteQuest
 import { bus } from '../lib/events.js';
 import { sprite } from '../lib/sprites.js';
 import { sfx } from '../lib/audio.js';
+import { checkAchievements } from '../data/badges.js';
 
 const localSheet = new CSSStyleSheet();
 localSheet.replaceSync(/*css*/`
@@ -280,7 +281,7 @@ class ScreenBattle extends HTMLElement {
       <div class="progress-info">
         <span>${this._quiz.current + 1} / ${this._quiz.questions.length}</span>
         <span>Score: ${this._quiz.score}</span>
-        <button class="flee-btn" id="flee-btn">RUN 💨</button>
+        <button class="flee-btn" id="flee-btn">RUN</button>
       </div>
       <div class="battle-hp"><div class="battle-hp-fill ${hpClass}" style="width:${100 - progress}%"></div></div>
       <div class="streak-indicator ${this._quiz.combo >= 3 ? 'on' : ''}">
@@ -384,6 +385,7 @@ class ScreenBattle extends HTMLElement {
 
     if (isCorrect) {
       sfx('battle-correct');
+      bus.emit('battle-correct');
       this._quiz.score++;
       this._quiz.combo++;
       if (this._quiz.combo > this._quiz.bestCombo) this._quiz.bestCombo = this._quiz.combo;
@@ -399,9 +401,10 @@ class ScreenBattle extends HTMLElement {
       bus.emit('show-dialogue', { text: explanation || 'Gotcha! ⭐ Caught successfully!', autoHide: 3000 });
     } else {
       sfx('battle-wrong');
+      bus.emit('battle-wrong');
       this._quiz.combo = 0;
       this._showFlee();
-      bus.emit('show-dialogue', { text: explanation || 'Oh no, it fled! 💨', autoHide: 3000 });
+      bus.emit('show-dialogue', { text: explanation || 'Oh no, it fled!', autoHide: 3000 });
     }
 
     setTimeout(() => {
@@ -500,6 +503,25 @@ class ScreenBattle extends HTMLElement {
 
     if (earnedNewBadge) {
       bus.emit('badge-earned', { badge: type });
+    }
+
+    // Quiz-specific achievements
+    const ach = { ...state.achievements };
+    let achChanged = false;
+    if (s === 10 && !ach.perfectQuiz) {
+      ach.perfectQuiz = true; achChanged = true;
+      bus.emit('badge-earned', { badge: 'perfectQuiz' });
+    }
+    if (this._quiz.bestCombo >= 7 && !ach.comboKing) {
+      ach.comboKing = true; achChanged = true;
+      bus.emit('badge-earned', { badge: 'comboKing' });
+    }
+    if (achChanged) state.achievements = ach;
+
+    // Run centralized check (catches quizMaster if all 4 badges now earned)
+    const newlyEarned = checkAchievements(state);
+    for (const key of newlyEarned) {
+      bus.emit('badge-earned', { badge: key });
     }
   }
 

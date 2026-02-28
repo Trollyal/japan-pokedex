@@ -1,4 +1,4 @@
-const CACHE_NAME = 'japan-guide-v11';
+const CACHE_NAME = 'japan-guide-v13';
 const PRECACHE_URLS = [
   './',
   './index.html',
@@ -17,6 +17,7 @@ const PRECACHE_URLS = [
   './lib/backup.js',
   './lib/sprites.js',
   './lib/audio.js',
+  './lib/progression.js',
   './components/app-shell.js',
   './components/screen-onboarding.js',
   './components/screen-pokedex.js',
@@ -27,11 +28,13 @@ const PRECACHE_URLS = [
   './components/screen-spot-detail.js',
   './components/screen-day-recap.js',
   './components/wild-encounter.js',
+  './components/bulbasaur-buddy.js',
   './data/phrases.js',
   './data/etiquette.js',
   './data/quiz-builders.js',
   './data/facts.js',
   './data/badges.js',
+  './data/locations.js',
   // Sprite WebP files
   './sprites/pokeball.webp',
   './sprites/greatball.webp',
@@ -83,6 +86,19 @@ const PRECACHE_URLS = [
   './sprites/badge-explorer.webp',
   './sprites/badge-champion.webp',
   './sprites/badge-nara-deer.webp',
+  './sprites/badge-first-catch.webp',
+  './sprites/badge-collector-10.webp',
+  './sprites/badge-perfect-quiz.webp',
+  './sprites/badge-quiz-master.webp',
+  './sprites/badge-combo-king.webp',
+  './sprites/badge-shutter-bug.webp',
+  './sprites/badge-streak-3.webp',
+  './sprites/badge-streak-5.webp',
+  './sprites/badge-streak-7.webp',
+  './sprites/badge-distance-walker.webp',
+  './sprites/badge-distance-runner.webp',
+  './sprites/badge-fact-hunter.webp',
+  './sprites/badge-diverse-explorer.webp',
   './sprites/oak.webp',
   './sprites/bulbasaur-happy.webp',
   './sprites/bulbasaur-sleepy.webp',
@@ -95,6 +111,11 @@ const PRECACHE_URLS = [
   './sprites/scene-wild-fact.webp',
   './sprites/scene-nara-deer.webp',
   './sprites/scene-day-recap.webp',
+  './sprites/scene-fushimi-inari.webp',
+  './sprites/scene-dotonbori.webp',
+  './sprites/scene-osaka-castle.webp',
+  './sprites/scene-kinkakuji.webp',
+  './sprites/scene-arashiyama.webp',
   'https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Quicksand:wght@400;500;600;700&display=swap'
 ];
 

@@ -6,6 +6,7 @@ import { bus } from '../lib/events.js';
 import { FACTS } from '../data/facts.js';
 import { sprite } from '../lib/sprites.js';
 import { sfx } from '../lib/audio.js';
+import { checkAchievements } from '../data/badges.js';
 
 const localSheet = new CSSStyleSheet();
 localSheet.replaceSync(/*css*/`
@@ -72,6 +73,9 @@ class WildEncounter extends HTMLElement {
 
     // Listen for Nara deer event
     bus.on('nara-deer', () => this._showNaraDeer());
+
+    // Listen for location easter egg events
+    bus.on('location-easter-egg', (e) => this._showLocationEasterEgg(e.detail.location));
   }
 
   _showFact(fact) {
@@ -98,10 +102,40 @@ class WildEncounter extends HTMLElement {
       }
       overlay.classList.remove('show');
       bus.emit('show-toast', { text: `Fact caught! ${state.caughtFacts.length} collected.` });
+      // Check fact-hunter achievement
+      const newlyEarned = checkAchievements(state);
+      for (const key of newlyEarned) {
+        bus.emit('badge-earned', { badge: key });
+      }
     });
 
     overlay.querySelector('#run-fact').addEventListener('click', () => {
       overlay.classList.remove('show');
+    });
+  }
+
+  _showLocationEasterEgg(location) {
+    // sfx handled by bus auto-listener in lib/audio.js (bus.on('location-easter-egg'))
+    const overlay = this.shadowRoot.getElementById('overlay');
+    const sceneSprite = sprite(location.sprite, 64) || sprite('scene-wild-fact', 64);
+    overlay.innerHTML = `
+      <div class="wild-card">
+        <div class="wild-emoji" style="font-size:0">${sceneSprite}</div>
+        <div class="wild-title">${location.name} discovered!</div>
+        <div class="wild-text">
+          ${location.text}<br><br>
+          ${sprite('bulbasaur-excited', 24)} Bulbasaur is thrilled!
+        </div>
+        <div class="wild-btns">
+          <button class="btn-primary" id="ok-location">Amazing!</button>
+        </div>
+      </div>
+    `;
+    overlay.classList.add('show');
+
+    overlay.querySelector('#ok-location').addEventListener('click', () => {
+      overlay.classList.remove('show');
+      bus.emit('show-toast', { text: `${location.name} added to your discoveries!` });
     });
   }
 
@@ -116,7 +150,7 @@ class WildEncounter extends HTMLElement {
           ${sprite('bulbasaur-confused', 24)} Bulbasaur looks confused...
         </div>
         <div class="wild-btns">
-          <button class="btn-primary" id="ok-deer">Amazing! 🦌</button>
+          <button class="btn-primary" id="ok-deer">Amazing! ${sprite('scene-nara-deer', 16)}</button>
         </div>
       </div>
     `;

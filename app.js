@@ -25,13 +25,14 @@ async function init() {
   const shell = document.querySelector('app-shell');
   setShell(shell);
 
-  // Load always-present overlay components (catch flow, trainer card, spot detail, wild encounter, day recap)
+  // Load always-present overlay components (catch flow, trainer card, spot detail, wild encounter, day recap, buddy)
   await Promise.all([
     import('./components/screen-catch-flow.js'),
     import('./components/screen-trainer-card.js'),
     import('./components/screen-spot-detail.js'),
     import('./components/wild-encounter.js'),
     import('./components/screen-day-recap.js'),
+    import('./components/bulbasaur-buddy.js'),
   ]);
 
   // Append overlay elements to shell
@@ -41,6 +42,7 @@ async function init() {
     <screen-spot-detail></screen-spot-detail>
     <wild-encounter></wild-encounter>
     <screen-day-recap></screen-day-recap>
+    <bulbasaur-buddy></bulbasaur-buddy>
   `);
 
   // Update last open timestamp
@@ -82,11 +84,11 @@ function showGreeting(state) {
   let msg;
 
   if (hour >= 5 && hour < 12) {
-    msg = `Good morning, ${name}! Ready to explore? ☀️`;
+    msg = `Good morning, ${name}! Ready to explore? ${sprite('icon-sun', 16)}`;
   } else if (hour >= 12 && hour < 18) {
     msg = `The adventure continues, ${name}! 🌸`;
   } else if (hour >= 18 && hour < 23) {
-    msg = `Osaka comes alive at night, ${name}! Check out the neon districts. 🌙`;
+    msg = `Osaka comes alive at night, ${name}! Check out the neon districts. ${sprite('icon-moon', 16)}`;
   } else {
     msg = `Even Bulbasaur is getting sleepy, ${name}... 💤`;
   }
