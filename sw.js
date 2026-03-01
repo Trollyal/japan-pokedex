@@ -1,4 +1,4 @@
-const CACHE_NAME = 'japan-guide-v13';
+const CACHE_NAME = 'japan-guide-v14';
 const PRECACHE_URLS = [
   './',
   './index.html',
@@ -25,6 +25,13 @@ const PRECACHE_URLS = [
   './components/screen-battle.js',
   './components/screen-journal.js',
   './components/screen-catch-flow.js',
+  './components/catch/catch-coordinator.js',
+  './components/catch/catch-styles.js',
+  './components/catch/catch-backgrounds.js',
+  './components/catch/beat-encounter.js',
+  './components/catch/beat-throw.js',
+  './components/catch/beat-gotcha.js',
+  './components/catch/beat-register.js',
   './components/screen-trainer-card.js',
   './components/screen-spot-detail.js',
   './components/screen-day-recap.js',
