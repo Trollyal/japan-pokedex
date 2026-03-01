@@ -5,6 +5,9 @@ import { PHRASES, KANJI } from '../data/phrases.js';
 import { ETIQUETTE, KANSAI_DIALECT, KANSAI_TIPS } from '../data/etiquette.js';
 import { bus } from '../lib/events.js';
 import { sprite } from '../lib/sprites.js';
+import { getState } from '../lib/state.js';
+import { localDateStr } from '../lib/date-utils.js';
+import { startLoop, stopLoop } from '../lib/audio.js';
 
 const localSheet = new CSSStyleSheet();
 localSheet.replaceSync(/*css*/`
@@ -133,6 +136,7 @@ class ScreenPokedex extends HTMLElement {
   }
 
   connectedCallback() {
+    startLoop('pokedex');
     this._render();
     this._bindEvents();
 
@@ -149,6 +153,10 @@ class ScreenPokedex extends HTMLElement {
       this.shadowRoot.getElementById('clear-btn').classList.add('show');
       this._renderContent();
     }
+  }
+
+  disconnectedCallback() {
+    stopLoop();
   }
 
   _render() {
@@ -194,12 +202,22 @@ class ScreenPokedex extends HTMLElement {
       });
     });
 
-    // Delegate speaker button clicks
     this.shadowRoot.getElementById('dex-content').addEventListener('click', (e) => {
       const btn = e.target.closest('.speak-btn');
       if (btn) {
         const text = btn.dataset.text;
         if (text) bus.emit('speak', { text, lang: 'ja-JP' });
+      }
+
+      const card = e.target.closest('.dex-card, .kanji-card, .rule-card, .kansai-card, .kansai-tip');
+      if (card) {
+        const state = getState();
+        const today = localDateStr(new Date());
+        if (state.studiedDate !== today) {
+          state.studiedToday = false;
+          state.studiedDate = today;
+        }
+        state.studiedToday = true;
       }
     });
   }

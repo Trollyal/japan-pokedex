@@ -6,6 +6,7 @@ import { bus } from '../lib/events.js';
 import { SPOT_TYPES, RARITY } from '../lib/pokemon-types.js';
 import { getBlob, deleteBlob } from '../lib/storage.js';
 import { sprite } from '../lib/sprites.js';
+import { startLoop, stopLoop } from '../lib/audio.js';
 
 const localSheet = new CSSStyleSheet();
 localSheet.replaceSync(/*css*/`
@@ -122,12 +123,14 @@ class ScreenJournal extends HTMLElement {
   }
 
   connectedCallback() {
+    startLoop('journal');
     this._render();
     this._bindEvents();
     this._unsub = onStateChange('caughtSpots', () => this._renderSpots());
   }
 
   disconnectedCallback() {
+    stopLoop();
     if (this._unsub) this._unsub();
     // Revoke thumbnail URLs
     for (const url of this._thumbnailCache.values()) URL.revokeObjectURL(url);

@@ -18,7 +18,7 @@ export const ACHIEVEMENT_BADGES = [
   { key: 'nightOwl', icon: sprite('badge-night-owl', 20), label: 'Night Owl', desc: 'Catch a spot after 10 PM' },
   { key: 'earlyBird', icon: sprite('badge-early-bird', 20), label: 'Early Bird', desc: 'Catch a spot before 7 AM' },
   { key: 'explorer', icon: sprite('badge-explorer', 20), label: 'Explorer', desc: 'Catch one of every type' },
-  { key: 'kansaiChampion', icon: sprite('badge-champion', 20), label: 'Kansai Champion', desc: 'Catch 20+ total spots' },
+  { key: 'kansaiChampion', icon: sprite('badge-champion', 20), label: 'Kansai Champion', desc: 'Catch 12+ total spots' },
   { key: 'naraDeer', icon: sprite('badge-nara-deer', 20), label: 'Nara Deer', desc: 'Encounter the Nara deer!' },
   // New 13
   { key: 'firstCatch', icon: sprite('badge-first-catch', 20), label: 'First Catch', desc: 'Catch your first spot' },
@@ -27,9 +27,9 @@ export const ACHIEVEMENT_BADGES = [
   { key: 'quizMaster', icon: sprite('badge-quiz-master', 20), label: 'Quiz Master', desc: 'Earn all 4 gym badges' },
   { key: 'comboKing', icon: sprite('badge-combo-king', 20), label: 'Combo King', desc: 'Get a 7+ combo in battle' },
   { key: 'shutterBug', icon: sprite('badge-shutter-bug', 20), label: 'Shutter Bug', desc: 'Catch 5 spots with photos' },
-  { key: 'streak3', icon: sprite('badge-streak-3', 20), label: 'Streak 3', desc: '3-day catch streak' },
-  { key: 'streak5', icon: sprite('badge-streak-5', 20), label: 'Streak 5', desc: '5-day catch streak' },
-  { key: 'streak7', icon: sprite('badge-streak-7', 20), label: 'Streak 7', desc: '7-day catch streak' },
+  { key: 'streak3', icon: sprite('badge-streak-3', 20), label: 'Streak 3', desc: '2-day catch streak' },
+  { key: 'streak5', icon: sprite('badge-streak-5', 20), label: 'Streak 5', desc: '4-day catch streak' },
+  { key: 'streak7', icon: sprite('badge-streak-7', 20), label: 'Streak 7', desc: '6-day catch streak' },
   { key: 'distanceWalker', icon: sprite('badge-distance-walker', 20), label: 'Walker', desc: 'Walk 2+ km total' },
   { key: 'distanceRunner', icon: sprite('badge-distance-runner', 20), label: 'Runner', desc: 'Walk 10+ km total' },
   { key: 'factHunter', icon: sprite('badge-fact-hunter', 20), label: 'Fact Hunter', desc: 'Collect 10 wild facts' },
@@ -56,7 +56,7 @@ export function checkAchievements(state) {
   // --- Spot-based ---
   if (spots.length >= 1) earn('firstCatch');
   if (spots.length >= 10) earn('collector10');
-  if (spots.length >= 20) earn('kansaiChampion');
+  if (spots.length >= 12) earn('kansaiChampion');
   if ((typeCounts.fire || 0) >= 5) earn('foodMaster');
   if ((typeCounts.psychic || 0) >= 3) earn('shrineKeeper');
 
@@ -73,9 +73,9 @@ export function checkAchievements(state) {
 
   // --- Streak-based ---
   const streak = state.longestStreak || 0;
-  if (streak >= 3) earn('streak3');
-  if (streak >= 5) earn('streak5');
-  if (streak >= 7) earn('streak7');
+  if (streak >= 2) earn('streak3');
+  if (streak >= 4) earn('streak5');
+  if (streak >= 6) earn('streak7');
 
   // --- Distance-based ---
   const dist = state.totalDistance || 0;

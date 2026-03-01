@@ -66,6 +66,9 @@ async function init() {
 
     // Backup reminder
     checkBackupReminder();
+
+    // Audio opt-in prompt (once only)
+    showAudioPrompt(state);
   }
 
   // GPS warmup (silent, fire-and-forget)
@@ -130,6 +133,35 @@ function warmupGPS() {
       maximumAge: 60000
     });
   } catch { /* silent */ }
+}
+
+function showAudioPrompt(state) {
+  if (state.audioPromptShown) return;
+  setTimeout(() => {
+    const el = document.createElement('div');
+    el.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:16px;';
+    el.innerHTML = `
+      <div style="background:#fff;border:4px solid #2C2C54;border-radius:20px;padding:28px 24px;max-width:320px;width:100%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.3);">
+        <div style="font-family:'Press Start 2P',monospace;font-size:11px;color:#2C2C54;margin-bottom:16px;line-height:1.6;">Enable retro sounds?</div>
+        <p style="font-family:'Quicksand',sans-serif;font-size:14px;color:#555;margin-bottom:20px;line-height:1.5;">Chiptune SFX &amp; music for the full experience.</p>
+        <div style="display:flex;gap:12px;justify-content:center;">
+          <button id="audio-yes" style="font-family:'Press Start 2P',monospace;font-size:10px;padding:12px 20px;border-radius:12px;border:3px solid #5DAA68;background:#E8F5E9;color:#2E7D32;cursor:pointer;">YES!</button>
+          <button id="audio-no" style="font-family:'Press Start 2P',monospace;font-size:10px;padding:12px 20px;border-radius:12px;border:3px solid #ddd;background:#fff;color:#757575;cursor:pointer;">No thanks</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(el);
+    el.querySelector('#audio-yes').addEventListener('click', () => {
+      state.audioMuted = false;
+      state.audioPromptShown = true;
+      el.remove();
+    });
+    el.querySelector('#audio-no').addEventListener('click', () => {
+      state.audioMuted = true;
+      state.audioPromptShown = true;
+      el.remove();
+    });
+  }, 5000);
 }
 
 function checkInstallBanner(state, shell) {

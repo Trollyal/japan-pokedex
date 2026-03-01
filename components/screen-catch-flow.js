@@ -18,7 +18,7 @@ localSheet.replaceSync(/*css*/`
 
   .catch-overlay {
     position: fixed; inset: 0; z-index: 200;
-    background: rgba(0,0,0,.95);
+    background: radial-gradient(ellipse at center, rgba(0,0,0,.55) 0%, rgba(0,0,0,.75) 100%);
     display: none; align-items: center; justify-content: center;
     padding: 16px; overflow-y: auto;
   }
@@ -165,10 +165,95 @@ localSheet.replaceSync(/*css*/`
   .throw-fallback { margin-top: 12px; font-size: 14px; opacity: 0; pointer-events: none; transition: opacity .3s; }
   .throw-fallback.visible { opacity: 1; pointer-events: auto; }
 
+  /* Arc throw trajectory */
+  .arc-throw {
+    will-change: transform;
+    animation: throwArc 0.55s cubic-bezier(.2,.8,.3,1) forwards;
+  }
+  @keyframes throwArc {
+    0%   { transform: translateY(0) translateX(0) scale(1); }
+    40%  { transform: translateY(-180px) translateX(8px) scale(.45); }
+    100% { transform: translateY(-140px) translateX(15px) scale(.55); }
+  }
+
+  /* Distant shake after arc */
+  .shake-distant {
+    will-change: transform;
+    animation: pokeShakeDistant 1.5s ease;
+  }
+  @keyframes pokeShakeDistant {
+    0%   { transform: translateY(-140px) scale(.55) rotate(0); }
+    15%  { transform: translateY(-140px) scale(.55) rotate(-18deg); }
+    30%  { transform: translateY(-140px) scale(.55) rotate(18deg); }
+    45%  { transform: translateY(-140px) scale(.55) rotate(-10deg); }
+    60%  { transform: translateY(-140px) scale(.55) rotate(10deg); }
+    75%  { transform: translateY(-140px) scale(.55) rotate(-4deg); }
+    100% { transform: translateY(-140px) scale(.55) rotate(0); }
+  }
+
+  /* Impact flash */
+  .catch-overlay.flash-impact::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: #fff;
+    opacity: 0;
+    animation: impactFlash 200ms ease-out forwards;
+    pointer-events: none;
+  }
+  @keyframes impactFlash {
+    0%   { opacity: 0.8; }
+    100% { opacity: 0; }
+  }
+
+  /* Particles */
+  .particle {
+    position: absolute;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--poke-yellow, #FFCB05);
+    animation: particleBurst 0.6s ease-out forwards;
+    pointer-events: none;
+  }
+  @keyframes particleBurst {
+    0%   { transform: translate(0, 0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--px), var(--py)) scale(0); opacity: 0; }
+  }
+
+  /* Tap prompt */
+  .tap-prompt {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    color: #888;
+    margin-top: 16px;
+    animation: tapPulse 1.5s ease-in-out infinite;
+  }
+  @keyframes tapPulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+
+  /* Bulbasaur celebrate */
+  .bulba-celebrate {
+    margin-top: 12px;
+    font-size: 0; line-height: 0;
+    animation: bulbaCelebrate 1s ease 0.3s both;
+  }
+  @keyframes bulbaCelebrate {
+    0%   { transform: translateY(40px) scale(0); opacity: 0; }
+    30%  { transform: translateY(-8px) scale(1.1); opacity: 1; }
+    50%  { transform: translateY(4px) scale(0.95); }
+    70%  { transform: translateY(-2px) scale(1.02); }
+    100% { transform: translateY(0) scale(1); }
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .beat, .encounter-flash, .shake-anim, .gotcha-text, .throw-hint, .swipe-arrow {
+    .beat, .encounter-flash, .shake-anim, .gotcha-text, .throw-hint, .swipe-arrow,
+    .arc-throw, .shake-distant, .bulba-celebrate, .particle, .tap-prompt {
       animation: none !important;
       transition: none !important;
+    }
+    .catch-overlay.flash-impact::after {
+      animation: none !important;
     }
   }
 `);
@@ -198,6 +283,13 @@ class ScreenCatchFlow extends HTMLElement {
     this._bindStartCatch();
   }
 
+  disconnectedCallback() {
+    if (this._unsubs) this._unsubs.forEach(fn => fn());
+    clearTimeout(this._fallbackTimer);
+    clearTimeout(this._arcTimer);
+    clearTimeout(this._gotchaTimer);
+  }
+
   _render() {
     this.shadowRoot.innerHTML = /*html*/`
       <div class="catch-overlay" id="overlay">
@@ -207,6 +299,7 @@ class ScreenCatchFlow extends HTMLElement {
             <div class="silhouette" style="filter:none;font-size:0">${sprite('pokeball', 80)}</div>
             <div class="wild-text">A wild SPOT<br>appeared!</div>
             <div class="gps-status" id="gps-status">📡 Searching for GPS signal...</div>
+            <div class="tap-prompt" id="beat1-tap" style="display:none">Tap to continue</div>
           </div>
 
           <!-- Beat 2: Throw (swipe gesture + click fallback) -->
@@ -223,6 +316,8 @@ class ScreenCatchFlow extends HTMLElement {
             <div class="star-burst" style="font-size:0">${sprite('scene-gotcha', 80)}</div>
             <div class="gotcha-text">Gotcha!</div>
             <div class="spot-number" id="spot-number"></div>
+            <div class="bulba-celebrate">${sprite('bulbasaur-excited', 48)}</div>
+            <div class="tap-prompt">Tap to continue</div>
           </div>
 
           <!-- Beat 4: Registration -->
@@ -299,7 +394,9 @@ class ScreenCatchFlow extends HTMLElement {
   }
 
   _bindStartCatch() {
-    bus.on('start-catch', () => this._startCatch());
+    this._unsubs = [
+      bus.on('start-catch', () => this._startCatch()),
+    ];
 
     // Type selection
     this.shadowRoot.getElementById('type-selector').addEventListener('click', (e) => {
@@ -356,7 +453,7 @@ class ScreenCatchFlow extends HTMLElement {
     if (throwBall) {
       throwBall.innerHTML = sprite('pokeball', 80);
       throwBall.style.transform = '';
-      throwBall.classList.remove('shake-anim', 'spring-back');
+      throwBall.classList.remove('shake-anim', 'spring-back', 'arc-throw', 'shake-distant');
     }
 
     const overlay = this.shadowRoot.getElementById('overlay');
@@ -376,21 +473,21 @@ class ScreenCatchFlow extends HTMLElement {
       this._position = await acquirePosition();
       gpsStatus.textContent = `📍 Locked! (±${Math.round(this._position.accuracy)}m)`;
       gpsStatus.classList.remove('error');
-
-      // Check Nara bounding box for easter egg
       this._checkNaraEasterEgg();
-
-      // Check location easter eggs
       this._checkLocationEasterEggs();
-
-      // Auto-advance to beat 2
-      setTimeout(() => this._showBeat(2), 800);
     } catch (err) {
       gpsStatus.textContent = err.message;
       gpsStatus.classList.add('error');
-      // Still allow catching without GPS
-      setTimeout(() => this._showBeat(2), 1500);
     }
+
+    const tapPrompt = this.shadowRoot.getElementById('beat1-tap');
+    if (tapPrompt) tapPrompt.style.display = '';
+    const panel = this.shadowRoot.getElementById('panel');
+    const advanceToBeat2 = () => {
+      panel.removeEventListener('click', advanceToBeat2);
+      this._showBeat(2);
+    };
+    panel.addEventListener('click', advanceToBeat2);
   }
 
   _bindThrowGesture() {
@@ -422,9 +519,9 @@ class ScreenCatchFlow extends HTMLElement {
       const duration = Date.now() - startTime;
 
       if (deltaY > 60 && duration < 500) {
-        // Successful swipe — throw!
         this._throwFired = true;
-        ball.style.transform = `translateY(-200px)`;
+        ball.style.transform = '';
+        ball.classList.add('arc-throw');
         navigator.vibrate?.(50);
         this._beat2Throw();
       } else {
@@ -445,40 +542,58 @@ class ScreenCatchFlow extends HTMLElement {
   _beat2Throw() {
     sfx('catch-throw');
     const ball = this.shadowRoot.getElementById('throw-ball');
-    ball.classList.add('shake-anim');
+    ball.classList.add('arc-throw');
 
-    // 5% break-free first attempt
-    if (Math.random() < 0.05) {
-      setTimeout(() => {
-        sfx('catch-breakfree');
-        ball.innerHTML = '<span style="font-size:24px;line-height:80px">Poof!</span>';
-        this.shadowRoot.querySelector('#beat2 .throw-hint').textContent = 'Oh! It broke free!';
-        setTimeout(() => {
-          ball.innerHTML = sprite('pokeball', 80);
-          ball.classList.remove('shake-anim');
-          ball.style.transform = '';
-          this._throwFired = false;
-          this.shadowRoot.querySelector('#beat2 .throw-hint').textContent = 'Swipe up to throw!';
-        }, 1000);
-      }, 1500);
-      return;
-    }
+    this._arcTimer = setTimeout(() => {
+      ball.classList.remove('arc-throw');
+      ball.classList.add('shake-distant');
+      sfx('catch-heartbeat');
+      sfx('catch-shake');
+    }, 550);
 
-    setTimeout(() => {
-      // Beat 3: Gotcha!
+    this._gotchaTimer = setTimeout(() => {
       const state = getState();
       const spotNum = (state.caughtSpots?.length || 0) + 1;
       this.shadowRoot.getElementById('spot-number').textContent = `Spot #${String(spotNum).padStart(3, '0')}`;
       sfx('catch-success');
-      navigator.vibrate?.(50);
+
+      const overlay = this.shadowRoot.getElementById('overlay');
+      overlay.classList.add('flash-impact');
+      setTimeout(() => overlay.classList.remove('flash-impact'), 250);
+
+      navigator.vibrate?.([80, 30, 120]);
+
+      this._spawnParticles();
+
       this._showBeat(3);
 
-      // Auto to registration after delay
-      setTimeout(() => {
+      const panel = this.shadowRoot.getElementById('panel');
+      this._advanceToBeat4 = () => {
+        panel.removeEventListener('click', this._advanceToBeat4);
+        this._advanceToBeat4 = null;
         this._showBeat(4);
         this._setupRegistration();
-      }, 1500);
-    }, 1800);
+      };
+      setTimeout(() => panel.addEventListener('click', this._advanceToBeat4), 800);
+    }, 2050);
+  }
+
+  _spawnParticles() {
+    const panel = this.shadowRoot.getElementById('panel');
+    const colors = ['#FFCB05', '#E3350D', '#3B4CCA', '#5DAA68', '#FF6B35', '#FFB7C5', '#F5C842', '#4A90D9'];
+    for (let i = 0; i < 8; i++) {
+      const angle = (i / 8) * Math.PI * 2;
+      const dist = 40 + Math.random() * 40;
+      const span = document.createElement('span');
+      span.className = 'particle';
+      span.style.setProperty('--px', `${Math.cos(angle) * dist}px`);
+      span.style.setProperty('--py', `${Math.sin(angle) * dist}px`);
+      span.style.left = '50%';
+      span.style.top = '50%';
+      span.style.background = colors[i];
+      span.addEventListener('animationend', () => span.remove());
+      panel.appendChild(span);
+    }
   }
 
   _setupRegistration() {
@@ -614,6 +729,9 @@ class ScreenCatchFlow extends HTMLElement {
       bus.emit('badge-earned', { badge: key });
     }
 
+    const typeCount = state.caughtSpots.filter(s => s.type === spot.type).length;
+    if (typeCount === 1) bus.emit('show-toast', { text: `First ${spot.type} spot discovered!` });
+
     // Emit events
     bus.emit('spot-caught', { spot });
 
@@ -652,7 +770,6 @@ class ScreenCatchFlow extends HTMLElement {
     const beat = this.shadowRoot.querySelector(`[data-beat="${n}"]`);
     if (beat) beat.classList.add('active');
 
-    // Show fallback throw button after 3s delay on beat 2
     if (n === 2) {
       clearTimeout(this._fallbackTimer);
       this._fallbackTimer = setTimeout(() => {
@@ -660,14 +777,24 @@ class ScreenCatchFlow extends HTMLElement {
         if (btn) btn.classList.add('visible');
       }, 3000);
     }
+
+    if (n !== 3) {
+      this.shadowRoot.querySelectorAll('.particle').forEach(p => p.remove());
+    }
   }
 
   _close() {
-    this.shadowRoot.getElementById('overlay').classList.remove('show');
+    clearTimeout(this._arcTimer);
+    clearTimeout(this._gotchaTimer);
+    if (this._advanceToBeat4) {
+      this.shadowRoot.getElementById('panel').removeEventListener('click', this._advanceToBeat4);
+      this._advanceToBeat4 = null;
+    }
+    const overlay = this.shadowRoot.getElementById('overlay');
+    overlay.classList.remove('show', 'flash-impact');
     this._showBeat(1);
     this._position = null;
     this._photoBlob = null;
-    // Reset form fields
     const nameInput = this.shadowRoot.getElementById('spot-name');
     if (nameInput) nameInput.style.borderColor = '';
   }

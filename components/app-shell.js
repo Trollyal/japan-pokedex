@@ -92,7 +92,10 @@ ${sprite('nav-journal', 28)}
         fab.innerHTML = sprite(ball.name, 56);
         fab.classList.add('ball-upgrading');
         sfx('ball-upgrade');
-        setTimeout(() => fab.classList.remove('ball-upgrading'), 800);
+        setTimeout(() => {
+          fab.classList.remove('ball-upgrading');
+          bus.emit('show-toast', { text: `Ball upgraded to ${ball.name}!`, duration: 4000 });
+        }, 800);
       } else {
         fab.innerHTML = sprite(ball.name, 56);
       }

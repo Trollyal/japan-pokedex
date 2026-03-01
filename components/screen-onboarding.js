@@ -155,6 +155,7 @@ class ScreenOnboarding extends HTMLElement {
     const text = "Hello there! Welcome to the world of Kansai! My name is Oak. I'm here to help guide you on your very first adventure in Japan!";
     let i = 0;
     el.textContent = '';
+    sfx('onboarding-melody');
     const interval = setInterval(() => {
       if (i < text.length) {
         el.textContent += text.charAt(i);

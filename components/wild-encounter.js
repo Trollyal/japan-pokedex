@@ -71,11 +71,14 @@ class WildEncounter extends HTMLElement {
   connectedCallback() {
     this.shadowRoot.innerHTML = `<div class="wild-overlay" id="overlay"></div>`;
 
-    // Listen for Nara deer event
-    bus.on('nara-deer', () => this._showNaraDeer());
+    this._unsubs = [
+      bus.on('nara-deer', () => this._showNaraDeer()),
+      bus.on('location-easter-egg', (e) => this._showLocationEasterEgg(e.detail.location)),
+    ];
+  }
 
-    // Listen for location easter egg events
-    bus.on('location-easter-egg', (e) => this._showLocationEasterEgg(e.detail.location));
+  disconnectedCallback() {
+    if (this._unsubs) this._unsubs.forEach(fn => fn());
   }
 
   _showFact(fact) {
