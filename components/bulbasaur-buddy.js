@@ -15,14 +15,19 @@ const MOODS = {
 
 const localSheet = new CSSStyleSheet();
 localSheet.replaceSync(/*css*/`
-  :host { display: block; position: fixed; bottom: 160px; right: 12px; z-index: 98; pointer-events: none; }
+  :host {
+    display: block; position: fixed;
+    bottom: calc(132px + env(safe-area-inset-bottom));
+    right: max(18px, calc(50% - 197px));
+    z-index: 98; pointer-events: none;
+  }
 
   .buddy {
-    width: 48px; height: 48px; cursor: pointer; pointer-events: auto;
+    width: 64px; height: 64px; cursor: pointer; pointer-events: auto;
     display: flex; align-items: center; justify-content: center;
     transition: transform .2s;
   }
-  .buddy img { image-rendering: pixelated; }
+  .buddy img { image-rendering: pixelated; display: block !important; }
 
   .buddyBounce   { animation: buddyBounce .5s ease; }
   .buddyExcited  { animation: buddyExcited .6s ease; }
@@ -85,7 +90,7 @@ class BulbasaurBuddy extends HTMLElement {
   }
 
   connectedCallback() {
-    this.shadowRoot.innerHTML = `<div class="buddy" id="buddy">${sprite('bulbasaur-happy', 40)}</div>`;
+    this.shadowRoot.innerHTML = `<div class="buddy" id="buddy">${sprite('bulbasaur-happy', 52)}</div>`;
 
     // Tap handler
     this.shadowRoot.getElementById('buddy').addEventListener('click', () => {
@@ -119,7 +124,7 @@ class BulbasaurBuddy extends HTMLElement {
     if (!buddy) return;
 
     const mood = MOODS[moodName] || MOODS.happy;
-    buddy.innerHTML = sprite(mood.sprite, 40);
+    buddy.innerHTML = sprite(mood.sprite, 52);
 
     // Apply animation
     buddy.className = 'buddy';
@@ -133,7 +138,7 @@ class BulbasaurBuddy extends HTMLElement {
     clearTimeout(this._moodTimer);
     this._moodTimer = setTimeout(() => {
       buddy.className = 'buddy';
-      buddy.innerHTML = sprite('bulbasaur-happy', 40);
+      buddy.innerHTML = sprite('bulbasaur-happy', 52);
     }, duration);
   }
 
@@ -143,7 +148,7 @@ class BulbasaurBuddy extends HTMLElement {
       clearTimeout(this._moodTimer);
       const buddy = this.shadowRoot.getElementById('buddy');
       if (!buddy) return;
-      buddy.innerHTML = sprite('bulbasaur-sleepy', 40);
+      buddy.innerHTML = sprite('bulbasaur-sleepy', 52);
       buddy.className = 'buddy buddySleepy';
     }, 30 * 60 * 1000); // 30 minutes
   }

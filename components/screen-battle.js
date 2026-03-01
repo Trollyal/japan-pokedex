@@ -6,7 +6,7 @@ import { BATTLE_CATS } from '../lib/pokemon-types.js';
 import { shuffle, buildPhraseQuestions, buildKanjiQuestions, buildEtiquetteQuestions, buildKansaiQuestions } from '../data/quiz-builders.js';
 import { bus } from '../lib/events.js';
 import { sprite } from '../lib/sprites.js';
-import { sfx } from '../lib/audio.js';
+import { sfx, startLoop, stopLoop } from '../lib/audio.js';
 import { checkAchievements } from '../data/badges.js';
 
 const localSheet = new CSSStyleSheet();
@@ -34,7 +34,7 @@ localSheet.replaceSync(/*css*/`
   .battle-category[data-type="grass"] { border-color: var(--grass); }
   .battle-category[data-type="electric"] { border-color: var(--electric); }
   .battle-cat-icon { flex-shrink: 0; line-height: 0; display: flex; align-items: center; justify-content: center; width: 40px; }
-  .battle-cat-icon img { image-rendering: pixelated; }
+  .battle-cat-icon img { image-rendering: pixelated; display: block !important; }
   .battle-cat-info { flex: 1; }
   .battle-cat-info h3 { font-family: 'Press Start 2P', monospace; font-size: 9px; margin-bottom: 6px; }
   .battle-cat-info p { font-size: 12px; color: #666; }
@@ -43,7 +43,7 @@ localSheet.replaceSync(/*css*/`
     display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     line-height: 0;
   }
-  .battle-cat-badge img { image-rendering: pixelated; }
+  .battle-cat-badge img { image-rendering: pixelated; display: block !important; }
   .battle-cat-badge.earned { background: var(--poke-yellow); box-shadow: 0 0 12px rgba(245,200,66,.5); }
 
   /* Badge Case */
@@ -195,7 +195,12 @@ class ScreenBattle extends HTMLElement {
   }
 
   connectedCallback() {
+    startLoop('battle');
     this._renderMenu();
+  }
+
+  disconnectedCallback() {
+    stopLoop();
   }
 
   _renderMenu() {

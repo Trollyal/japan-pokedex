@@ -39,6 +39,7 @@ localSheet.replaceSync(/*css*/`
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; z-index: 10; color: #aaa; margin: -8px -8px 0 0;
   }
+  .tc-close img { display: block !important; }
   .tc-close:hover { color: var(--poke-dark); }
 
   .tc-header { text-align: center; margin-bottom: 16px; }
@@ -88,7 +89,7 @@ localSheet.replaceSync(/*css*/`
     align-items: center; justify-content: center;
     background: #eee; margin: 0 auto 6px;
   }
-  .tc-badge-item .badge-circle img { image-rendering: pixelated; }
+  .tc-badge-item .badge-circle img { image-rendering: pixelated; display: block !important; }
   .tc-badge-item .badge-circle.earned { background: var(--poke-yellow); }
   .tc-badge-item .badge-name { font-size: 8px; color: #757575; font-family: 'Press Start 2P', monospace; }
 
@@ -104,7 +105,7 @@ localSheet.replaceSync(/*css*/`
     align-items: center; justify-content: center;
     background: #eee; margin: 0 auto 6px; filter: grayscale(1) opacity(.3);
   }
-  .ach-icon img { image-rendering: pixelated; }
+  .ach-icon img { image-rendering: pixelated; display: block !important; }
   .ach-icon.earned { background: var(--poke-yellow); filter: none; }
   .ach-label { font-size: 7px; color: #757575; font-family: 'Press Start 2P', monospace; line-height: 1.3; }
 
@@ -260,8 +261,9 @@ class ScreenTrainerCard extends HTMLElement {
       { num: state.totalQuizzes, label: 'Quizzes' },
       { num: state.caughtSpots?.length || 0, label: 'Spots' },
       { num: (state.totalDistance || 0).toFixed(1), label: 'Buddy km' },
+      { num: state.studiedToday ? '\u2713' : '-', label: 'Studied Today' },
     ];
-    const allZero = stats.every(s => !s.num || Number(s.num) === 0);
+    const allZero = stats.every(s => !s.num || s.num === '-' || Number(s.num) === 0);
     const statsEl = this.shadowRoot.getElementById('stats');
     if (allZero) {
       statsEl.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:8px 0">

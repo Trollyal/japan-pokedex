@@ -84,12 +84,13 @@
   .header h1 span { font-size: 8px; display: block; color: #FFF8E1; margin-top: 4px; }
   .mute-btn {
     background: rgba(255,255,255,.18); border: 2px solid rgba(255,255,255,.3);
-    border-radius: 10px; cursor: pointer; padding: 10px; margin-right: 6px;
+    border-radius: 10px; cursor: pointer; padding: 8px; margin-right: 6px;
     width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
     flex-shrink: 0; transition: background .15s; line-height: 0;
   }
   .mute-btn:active { background: rgba(255,255,255,.3); }
-  .mute-btn img { filter: brightness(0) invert(1); }
+  .mute-btn img { filter: brightness(0) invert(1); display: block !important; }
+  .trainer-btn img { display: block !important; }
   .trainer-btn {
     background: var(--poke-yellow); border: 2px solid var(--poke-dark);
     border-radius: 50%; width: 42px; height: 42px; cursor: pointer;
@@ -119,7 +120,7 @@
     content: ''; position: absolute; top: -3px; left: 20%; right: 20%; height: 3px;
     background: var(--poke-red);
   }
-  .nav-btn svg, .nav-btn img { width: 28px; height: 28px; display: inline-block; vertical-align: middle; image-rendering: pixelated; }
+  .nav-btn svg, .nav-btn img { width: 28px; height: 28px; display: block !important; image-rendering: pixelated; }
   .nav-btn.active svg, .nav-btn.active img { filter: drop-shadow(0 2px 4px rgba(227,53,13,.3)); }
   .nav-btn:not(.active) img { opacity: .5; }
 
