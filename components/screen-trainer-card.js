@@ -1,11 +1,12 @@
 // components/screen-trainer-card.js — Modal with stats, Bulbasaur companion, Oak commentary, backup
 
-import sharedStyles from '../lib/shared-styles.js';
 import { getState, onStateChange } from '../lib/state.js';
-import { bus } from '../lib/events.js';
-import { sprite } from '../lib/sprites.js';
-import { sfx } from '../lib/audio.js';
+
 import { ACHIEVEMENT_BADGES } from '../data/badges.js';
+import { bus } from '../lib/events.js';
+import { sfx } from '../lib/audio.js';
+import sharedStyles from '../lib/shared-styles.js';
+import { sprite } from '../lib/sprites.js';
 
 const localSheet = new CSSStyleSheet();
 localSheet.replaceSync(/*css*/`
@@ -203,7 +204,7 @@ class ScreenTrainerCard extends HTMLElement {
               <button class="backup-btn" id="import-btn">${sprite('icon-import', 14)} IMPORT</button>
             </div>
 
-            <div class="copyright">&copy; The Pok&eacute;mon Company</div>
+            <div class="copyright">&copy; The Loving Boyfriend Company</div>
           </div>
         </div>
       </div>
