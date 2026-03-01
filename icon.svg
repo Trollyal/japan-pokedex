@@ -1,33 +1,57 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#E3350D"/>
-      <stop offset="100%" stop-color="#C42D0B"/>
+    <linearGradient id="bg" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0%" stop-color="#F04040"/>
+      <stop offset="100%" stop-color="#C42020"/>
     </linearGradient>
   </defs>
+
   <!-- Background -->
-  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
-  <!-- Pokeball body -->
-  <circle cx="256" cy="270" r="160" fill="#fff" stroke="#2C2C54" stroke-width="12"/>
-  <!-- Pokeball top half (red) -->
-  <path d="M96 270 A160 160 0 0 1 416 270" fill="#E3350D" stroke="#2C2C54" stroke-width="12"/>
-  <!-- Pokeball center line -->
-  <line x1="96" y1="270" x2="416" y2="270" stroke="#2C2C54" stroke-width="12"/>
-  <!-- Pokeball center button -->
-  <circle cx="256" cy="270" r="36" fill="#fff" stroke="#2C2C54" stroke-width="12"/>
-  <circle cx="256" cy="270" r="18" fill="#fff" stroke="#2C2C54" stroke-width="6"/>
-  <!-- Torii gate on top -->
-  <g fill="none" stroke="#FFCB05" stroke-width="10" stroke-linecap="round">
-    <!-- Top beam -->
-    <path d="M166 120 L346 120" stroke-width="14"/>
-    <!-- Curved top -->
-    <path d="M156 105 Q256 75 356 105" stroke-width="10"/>
-    <!-- Pillars -->
-    <line x1="190" y1="120" x2="190" y2="175"/>
-    <line x1="322" y1="120" x2="322" y2="175"/>
-    <!-- Cross beam -->
-    <line x1="180" y1="145" x2="332" y2="145"/>
+  <rect width="512" height="512" rx="108" fill="url(#bg)"/>
+
+  <!-- Pokeball -->
+  <g transform="translate(256, 355)">
+    <!-- Ball body -->
+    <circle r="100" fill="#F0F0F0" stroke="#1E1E3C" stroke-width="8"/>
+    <!-- Top half red -->
+    <path d="M-100 0 A100 100 0 0 1 100 0 Z" fill="#E83838" stroke="#1E1E3C" stroke-width="8"/>
+    <!-- Center band -->
+    <line x1="-100" y1="0" x2="-24" y2="0" stroke="#1E1E3C" stroke-width="10"/>
+    <line x1="24" y1="0" x2="100" y2="0" stroke="#1E1E3C" stroke-width="10"/>
+    <!-- Center button -->
+    <circle r="26" fill="#F0F0F0" stroke="#1E1E3C" stroke-width="8"/>
+    <circle r="12" fill="#F0F0F0" stroke="#1E1E3C" stroke-width="4"/>
   </g>
-  <!-- JP text -->
-  <text x="256" y="470" text-anchor="middle" font-family="sans-serif" font-weight="bold" font-size="48" fill="#FFCB05" letter-spacing="4">日本ガイド</text>
+
+  <!-- Bulbasaur -->
+  <g transform="translate(256, 205)">
+    <!-- Body -->
+    <ellipse rx="85" ry="65" fill="#6DC850" stroke="#1E1E3C" stroke-width="6"/>
+
+    <!-- Darker spots on body -->
+    <ellipse cx="-45" cy="10" rx="12" ry="9" fill="#5CB840"/>
+    <ellipse cx="48" cy="5" rx="11" ry="8" fill="#5CB840"/>
+
+    <!-- Bulb -->
+    <ellipse cy="-42" rx="60" ry="45" fill="#48A838" stroke="#1E1E3C" stroke-width="5"/>
+
+    <!-- Bulb leaf veins -->
+    <path d="M0 -88 L-12 -50 L0 -42 L12 -50 Z" fill="#306828" stroke="#1E1E3C" stroke-width="3"/>
+    <path d="M-20 -78 L-32 -48 L-18 -40 Z" fill="#306828" opacity="0.7" stroke="#1E1E3C" stroke-width="2"/>
+    <path d="M20 -78 L32 -48 L18 -40 Z" fill="#306828" opacity="0.7" stroke="#1E1E3C" stroke-width="2"/>
+
+    <!-- Front legs -->
+    <ellipse cx="-55" cy="48" rx="24" ry="16" fill="#5CB840" stroke="#1E1E3C" stroke-width="5"/>
+    <ellipse cx="55" cy="48" rx="24" ry="16" fill="#5CB840" stroke="#1E1E3C" stroke-width="5"/>
+
+    <!-- Eyes -->
+    <ellipse cx="-28" cy="-2" rx="15" ry="18" fill="#C03028"/>
+    <ellipse cx="28" cy="-2" rx="15" ry="18" fill="#C03028"/>
+    <!-- Eye highlights -->
+    <circle cx="-22" cy="-8" r="7" fill="#fff"/>
+    <circle cx="34" cy="-8" r="7" fill="#fff"/>
+
+    <!-- Mouth -->
+    <path d="M-16 22 Q0 34 16 22" fill="none" stroke="#1E1E3C" stroke-width="5" stroke-linecap="round"/>
+  </g>
 </svg>
